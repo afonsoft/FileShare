@@ -56,10 +56,7 @@ namespace FireShare.Controllers
 
             if (!MultipartRequestHelper.IsMultipartContentType(Request.ContentType))
             {
-                ModelState.AddModelError("File",
-                    $"The request couldn't be processed (Error 1).");
-                // Log error
-
+                ModelState.AddModelError("File",$"The request couldn't be processed (Error 1).");
                 return BadRequest(ModelState);
             }
 
@@ -77,67 +74,46 @@ namespace FireShare.Controllers
 
                 if (hasContentDispositionHeader)
                 {
-                    // This check assumes that there's a file
-                    // present without form data. If form data
-                    // is present, this method immediately fails
-                    // and returns the model error.
-                    if (!MultipartRequestHelper
-                        .HasFileContentDisposition(contentDisposition))
+                    if (!MultipartRequestHelper.HasFileContentDisposition(contentDisposition))
                     {
-                        ModelState.AddModelError("File",
-                            $"The request couldn't be processed (Error 2).");
-                        // Log error
-
+                        ModelState.AddModelError("File", $"The request couldn't be processed (Error 2).");
                         return BadRequest(ModelState);
                     }
                     else
                     {
-                        // Don't trust the file name sent by the client. To display
-                        // the file name, HTML-encode the value.
-                        var trustedFileNameForDisplay = WebUtility.HtmlEncode(
-                                contentDisposition.FileName.Value);
+                        var trustedFileNameForDisplay = WebUtility.HtmlEncode(contentDisposition.FileName.Value);
                         fileNameForDisplay = trustedFileNameForDisplay;
 
                         var trustedFileNameForFileStorage = Path.GetRandomFileName();
                         fileNameForFileStorage = trustedFileNameForFileStorage;
 
-                        var streamedFileContent = await FileHelpers.ProcessStreamedFile(
-                            section, contentDisposition, ModelState,
-                            _permittedExtensions, _fileSizeLimit);
+                        var streamedFileContent = await FileHelpers.ProcessStreamedFile(section, contentDisposition, ModelState, _permittedExtensions, _fileSizeLimit);
 
                         if (!ModelState.IsValid)
                         {
                             return BadRequest(ModelState);
                         }
 
-                        using (var targetStream = System.IO.File.Create(
-                            Path.Combine(_targetFilePath, trustedFileNameForFileStorage)))
+                        using (var targetStream = System.IO.File.Create(Path.Combine(_targetFilePath, trustedFileNameForFileStorage)))
                         {
                             contentType += streamedFileContent.Count();
                             await targetStream.WriteAsync(streamedFileContent);
-
-                            _logger.LogInformation(
-                                "Uploaded file '{TrustedFileNameForDisplay}' saved to " +
-                                "'{TargetFilePath}' as {TrustedFileNameForFileStorage}",
-                                trustedFileNameForDisplay, _targetFilePath,
-                                trustedFileNameForFileStorage);
+                            _logger.LogInformation($"Uploaded file '{trustedFileNameForDisplay}' saved to '{_targetFilePath}' as {trustedFileNameForFileStorage}");
                         }
                     }
                 }
 
-                // Drain any remaining section body that hasn't been consumed and
-                // read the headers for the next section.
                 section = await reader.ReadNextSectionAsync();
             }
 
             //Salvar os dados do arquivo no banco de dados.
-            string hash = SaveInDb(HttpContext.Request.HttpContext.Connection.RemoteIpAddress.ToString(), fileNameForDisplay, fileNameForFileStorage, contentType);
+            var model = SaveInDb(HttpContext.Request.HttpContext.Connection.RemoteIpAddress.ToString(), fileNameForDisplay, fileNameForFileStorage, contentType);
 
-            return Created(nameof(StreamingController), hash);
+            return Created(nameof(HomeController), model);
         }
         #endregion
 
-        private string SaveInDb(string remoteIpAddress, string fileNameForDisplay, string fileNameForFileStorage, long contentType)
+        private Models.FileModel SaveInDb(string remoteIpAddress, string fileNameForDisplay, string fileNameForFileStorage, long contentType)
         {
 
             var fileUploaded = new FileModel
@@ -152,7 +128,16 @@ namespace FireShare.Controllers
                 Hash = CreateHashFile(fileNameForDisplay, fileNameForFileStorage, remoteIpAddress, contentType)
             };
 
-            return fileUploaded.ToString();
+            //Salvar no Banco de Dados
+
+            return new Models.FileModel
+            {
+                Hash = fileUploaded.Hash,
+                Id = fileUploaded.Id,
+                Size = fileUploaded.Size,
+                UntrustedName = fileUploaded.Name,
+                UploadDT = fileUploaded.CreationDateTime
+            };
         }
 
         private string CreateHashFile(string fileNameForDisplay, string fileNameForFileStorage, string remoteIp, long contentType)

@@ -2,10 +2,10 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
+<div class="form-container">
     <h1 class="display-4">Welcome</h1>
    <form id="uploadForm" action="Streaming/UploadPhysical" method="post" 
-    enctype="multipart/form-data" onsubmit="AJAXSubmit(this);return false;">
+    enctype="multipart/form-data" onsubmit="UploadSubimit(this);">
     <dl>
         <dt>
             <label for="file">File</label>
@@ -18,34 +18,8 @@
     <input class="btn" type="submit" value="Upload" />
 
     <div style="margin-top:15px">
-        <output form="uploadForm" name="result"></output>
+        <progress id="progressBar" value="0" max="100" style="width:300px;"></progress>
+        <h3 id="status"></h3>
+        <p id="loaded_n_total"></p>
     </div>
 </form>
-<div id="result"></div>
-</div>
-
-@section Scripts {
-  <script>
-    "use strict";
-    async function AJAXSubmit (oFormElement) {
-      const formData = new FormData(oFormElement);
-      try {
-        const response = await fetch(oFormElement.action, {
-          method: 'POST',
-          headers: {
-            'RequestVerificationToken': getCookie('RequestVerificationToken')
-          },
-          body: formData
-        });
-        console.error('Result:', response.status + ' ' + response.statusText);
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    }
-    function getCookie(name) {
-      var value = "; " + document.cookie;
-      var parts = value.split("; " + name + "=");
-      if (parts.length == 2) return parts.pop().split(";").shift();
-    }
-  </script>
-}

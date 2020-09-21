@@ -78,9 +78,7 @@ namespace FireShare
                 options.AddPolicy("CorsPolicy",
                     builder => builder.AllowAnyOrigin()
                         .AllowAnyMethod()
-                        .AllowAnyHeader()
-                        .SetIsOriginAllowed(origin => true)
-                        .AllowCredentials());
+                        .AllowAnyHeader());
             });
 
             services.AddSession(options =>
@@ -134,6 +132,7 @@ namespace FireShare
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapRazorPages();
             });
 
             InitializeHangfire(new HangfireJob());

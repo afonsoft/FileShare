@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
@@ -13,14 +14,24 @@ namespace FireShare
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            CreateWebHostBuilder(args).Build().Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args)
+        {
+            return new WebHostBuilder()
+                .CaptureStartupErrors(true)
+                .UseKestrel(options => 
+                { 
+                    options.AddServerHeader = false;
+                    options.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(120);
+                    options.Limits.RequestHeadersTimeout = TimeSpan.FromMinutes(120);
+                    options.Limits.MaxRequestBodySize = int.MaxValue;
+                })
+                .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseIIS()
+                .UseIISIntegration()
+                .UseStartup<Startup>();
+        }
     }
 }

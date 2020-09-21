@@ -1,6 +1,7 @@
 using System;
 using System.IO.Compression;
 using Afonsoft.Logger;
+using FireShare.Extensions;
 using FireShare.Interfaces;
 using FireShare.Jobs;
 using FireShare.Repository;
@@ -11,18 +12,25 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace FireShare
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly IConfigurationRoot _appConfiguration;
+        private readonly IWebHostEnvironment _hostingEnvironment;
+
+           public Startup(IWebHostEnvironment env)
         {
-            Configuration = configuration;
+            _hostingEnvironment = env;
+            _appConfiguration = env.GetAppConfiguration();
         }
 
         public IConfiguration Configuration { get; }
@@ -30,6 +38,7 @@ namespace FireShare
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRazorPages();
             services.AddControllersWithViews()
                 .AddRazorRuntimeCompilation()
                 .AddNewtonsoftJson(x => x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
@@ -52,10 +61,13 @@ namespace FireShare
             services.AddAntiforgery();
             services.AddHttpClient();
 
+            services.AddHttpContextAccessor();
+            services.TryAddSingleton<IActionContextAccessor, ActionContextAccessor>();
+
             services.AddDataProtection()
             .SetDefaultKeyLifetime(TimeSpan.FromDays(365));
 
-            string connectionString = Configuration.GetConnectionString("Default");
+            string connectionString = _appConfiguration.GetConnectionString("Default");
 
             services.AddHangfire(x =>
             {
@@ -126,6 +138,11 @@ namespace FireShare
             app.UseAuthorization();
 
             app.UseHangfireDashboard();
+
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
 
             app.UseEndpoints(endpoints =>
             {

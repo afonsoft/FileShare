@@ -12,8 +12,8 @@ namespace FireShare.Repository.Mapping
 
             builder.ToTable("Files");
             builder.Property(c => c.Id).HasColumnName("Id");
-            builder.Property(c => c.Email).HasColumnName("Email").HasMaxLength(255);
-            builder.Property(c => c.Name).HasColumnName("Name").HasMaxLength(300);
+            builder.Property(c => c.Name).HasColumnName("Name").HasMaxLength(400);
+            builder.Property(c => c.StorageName).HasColumnName("StorageName").HasMaxLength(400);
             builder.Property(c => c.Type).HasColumnName("Type").HasMaxLength(250);
             builder.Property(c => c.Size).HasColumnName("Size");
             builder.Property(c => c.IP).HasColumnName("IP").HasMaxLength(100);

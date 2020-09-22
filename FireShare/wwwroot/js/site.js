@@ -53,7 +53,8 @@ function UploadSubimit(oFormElement, action) {
             alert(data);
         },
         error: function (xhr, ajaxOptions, thrownError) {
-            alert(error);
+            console.log(xhr.status + '-' + xhr.statusText);
+            alert(thrownError);
         }
     });
     return false;

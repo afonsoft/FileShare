@@ -4,15 +4,14 @@ async function AJAXSubmit(oFormElement) {
     try {
         const response = await fetch(oFormElement.action, {
             method: 'POST',
-            headers: {
-                'RequestVerificationToken': getCookie('RequestVerificationToken')
-            },
+            headers: { 'RequestVerificationToken': getCookie('RequestVerificationToken') },
             body: formData
         });
         console.error('Result:', response.status + ' ' + response.statusText);
     } catch (error) {
         console.error('Error:', error);
     }
+    return false;
 }
 function getCookie(name) {
     var value = "; " + document.cookie;
@@ -20,11 +19,10 @@ function getCookie(name) {
     if (parts.length == 2) return parts.pop().split(";").shift();
 }
 
- function UploadSubimit(e) {
-    e.preventDefault();
-     var formData = new FormData(oFormElement);
+function UploadSubimit(oFormElement, action) {
+    var formData = new FormData(oFormElement);
     $.ajax({
-        url: oFormElement.action,
+        url: action,
         headers: { 'RequestVerificationToken': getCookie('RequestVerificationToken') },
         type: 'POST',
         data: formData,
@@ -57,5 +55,9 @@ function getCookie(name) {
             }
 
         },
+        error: function (error) {
+            alert(error);
+        }
     });
+    return false;
 };

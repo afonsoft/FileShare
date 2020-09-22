@@ -1,25 +1,76 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "File Share";
 }
 
-<div class="form-container">
-    <h1 class="display-4">Welcome</h1>
-   <form id="uploadForm" action="Streaming/UploadPhysical" method="post" 
-    enctype="multipart/form-data" onsubmit="UploadSubimit(this);">
-    <dl>
-        <dt>
-            <label for="file">File</label>
-        </dt>
-        <dd>
-            <input id="file" type="file" name="file" />
-        </dd>
-    </dl>
-
-    <input class="btn" type="submit" value="Upload" />
-
-    <div style="margin-top:15px">
-        <progress id="progressBar" value="0" max="100" style="width:300px;"></progress>
-        <h3 id="status"></h3>
-        <p id="loaded_n_total"></p>
+<div class="container-fluid">
+    <div class="row">
+        <div  class="col">File Share</div>
     </div>
-</form>
+    <div class="row">
+        <div  class="col">
+            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+            <!-- HorizontalResponsivo -->
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-2122647083447667"
+                 data-ad-slot="2536456475"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+          <form id="uploadForm" action="Streaming/UploadFileStream" method="post" enctype="multipart/form-data">
+            <dl>
+                <dt>
+                    <label for="file">File</label>
+                </dt>
+                <dd>
+                    <input id="file" type="file" name="file" />
+                </dd>
+            </dl>
+
+            <input class="btn" type="button" value="Upload" onclick="return UploadSubimit(document.getElementById('uploadForm'), 'Streaming/UploadFileStream')" />
+
+            <div style="margin-top:15px">
+                <progress id="progressBar" value="0" max="100" style="width:300px;"></progress>
+                <h3 id="status"></h3>
+                <p id="loaded_n_total"></p>
+            </div>
+        </form>
+        </div>
+        <div class="col-8">
+            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+            <!-- QuadradoResponsivo -->
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-2122647083447667"
+                 data-ad-slot="8909468727"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    </div>
+    <div class="row">
+        <div  class="col">
+            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+            <!-- HorizontalResponsivo -->
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-2122647083447667"
+                 data-ad-slot="2536456475"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    </div>
+</div>
+
+   

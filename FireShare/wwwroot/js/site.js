@@ -34,28 +34,25 @@ function UploadSubimit(oFormElement, action) {
         xhr: function () {
             //upload Progress
             var xhr = $.ajaxSettings.xhr();
-            if (xhr.upload) {
-                xhr.upload.addEventListener('progress', function (event) {
-                    var percent = 0;
-                    var position = event.loaded || event.position;
-                    var total = event.total;
-                    if (event.lengthComputable) {
-                        percent = Math.ceil(position / total * 100);
-                    }
-                    //update progressbar
-                    $(".progress-bar").css("width", + percent + "%");
-                    $(".status").text(percent + "%");
-                }, true);
-            }
-            return xhr;
-        },
-        success: function (mdata) {
-            if (mdata == 0) {
-                alert("Done");
+
+            xhr.upload.onprogress = function (event) {
+                var percent = 0;
+                var position = event.loaded || event.position;
+                var total = event.total;
+                if (event.lengthComputable) {
+                    percent = Math.ceil(position / total * 100);
+                }
+                //update progressbar
+                $("#progress-bar").css("width", + percent + "%");
+                $("#status").text(percent + "%");
             }
 
+            return xhr;
         },
-        error: function (error) {
+        success: function (data) {       
+            alert(data);
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
             alert(error);
         }
     });

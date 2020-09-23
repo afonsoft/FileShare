@@ -18,7 +18,7 @@ namespace FireShare.Controllers
             if (string.IsNullOrEmpty(hashCode))
                 return RedirectToAction("index", "home");
 
-            return View();
+            return View(new FireShare.Models.FileModel { Id = System.Guid.NewGuid(), Hash = "ASDASDASDASD", Size = 12313123123, UntrustedName = "asdasd.ass", TrustedName="arquivo.zip", Path="c:\\", UploadDT = System.DateTime.Now });
         }
     }
 }

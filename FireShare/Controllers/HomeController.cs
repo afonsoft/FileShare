@@ -29,6 +29,11 @@ namespace FireShare.Controllers
             return View();
         }
 
+        public IActionResult Download(string hash = null)
+        {
+            return View();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

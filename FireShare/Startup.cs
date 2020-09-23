@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.IO.Compression;
 using Afonsoft.Logger;
 using FireShare.Extensions;
@@ -7,6 +8,7 @@ using FireShare.Jobs;
 using FireShare.Repository;
 using Hangfire;
 using Hangfire.Console;
+using Hangfire.SQLite;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
@@ -57,7 +59,7 @@ namespace FireShare
             services.AddAfonsoftLogging();
             services.AddMemoryCache();
             services.AddDistributedMemoryCache();
-            services.AddEntityFrameworkSqlServer();
+            services.AddEntityFrameworkSqlite();
             services.AddAntiforgery();
             services.AddHttpClient();
 
@@ -69,20 +71,18 @@ namespace FireShare
 
             string connectionString = _appConfiguration.GetConnectionString("Default");
 
-            services.AddHangfire(x =>
-            {
-                x.UseSqlServerStorage(connectionString);
-                x.UseConsole();
-            });
-
-            services.AddHangfireServer();
-
             services.AddSingleton(typeof(IRepository<,>), typeof(Repository<,>));
 
             services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseLazyLoadingProxies(true);
-                options.UseSqlServer(connectionString);
+                options.UseSqlite(connectionString);
+            });
+
+            services.AddHangfire(x =>
+            {
+                x.UseSQLiteStorage(connectionString);
+                x.UseConsole();
             });
 
             services.AddCors(options =>
@@ -120,6 +120,7 @@ namespace FireShare
             services.Configure<BrotliCompressionProviderOptions>(options => { options.Level = CompressionLevel.Fastest; });
             services.Configure<GzipCompressionProviderOptions>(options => { options.Level = CompressionLevel.Fastest; });
 
+            services.AddHangfireServer();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

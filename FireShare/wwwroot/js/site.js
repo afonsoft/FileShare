@@ -37,7 +37,7 @@ function UploadSubimit(oFormElement, action) {
         },
         success: function (data) {      
             $("#progress").hide();
-            showAlertDanger(data);
+            window.location.href = '/download/' + data;
         },
         error: function (xhr, ajaxOptions, thrownError) {
             $("#progress").hide();

@@ -8,6 +8,7 @@ function getCookie(name) {
 
 function UploadSubimit(oFormElement, action) {
     var formData = new FormData(oFormElement);
+    $("#progress").show();
     $.ajax({
         url: action,
         headers: { 'RequestVerificationToken': getCookie('RequestVerificationToken') },
@@ -17,7 +18,6 @@ function UploadSubimit(oFormElement, action) {
         contentType: false,
         processData: false,
         enctype: 'multipart/form-data',
-
         xhr: function () {
             //upload Progress
             var xhr = $.ajaxSettings.xhr();
@@ -30,52 +30,40 @@ function UploadSubimit(oFormElement, action) {
                     percent = Math.ceil(position / total * 100);
                 }
                 //update progressbar
-                $("#progress-bar").css("width", + percent + "%");
-                $("#status").text(percent + "%");
+                $("#progressbar").css("width", + percent + "%");
+                $("#progressbar").html(percent + "%");
             }
-
             return xhr;
         },
-        success: function (data) {       
-            alert(data);
+        success: function (data) {      
+            $("#progress").hide();
+            showAlertDanger(data);
         },
         error: function (xhr, ajaxOptions, thrownError) {
-            console.log(xhr.status + '-' + xhr.statusText);
-            alert(thrownError);
+            $("#progress").hide();
+            showAlertDanger(xhr.status + '-' + xhr.statusText + '<br/>' + thrownError);
         }
     });
     return false;
 };
 
+function showAlertDanger(message) {
+    $("#alertText").text(message);
+    $("#alertShow").show();
+}
 
 function inputFileTemplate() {
-    $(".input-file").before(
-        function () {
-            if (!$(this).prev().hasClass('input-ghost')) {
-                var element = $("<input type='file' class='input-ghost' style='visibility:hidden; height:0'>");
-                element.attr("name", $(this).attr("name"));
-                element.change(function () {
-                    element.next(element).find('input').val((element.val()).split('\\').pop());
-                });
-                $(this).find("button.btn-choose").click(function () {
-                    element.click();
-                });
-                $(this).find("button.btn-reset").click(function () {
-                    element.val(null);
-                    $(this).parents(".input-file").find('input').val('');
-                });
-                $(this).find('input').css("cursor", "pointer");
-                $(this).find('input').mousedown(function () {
-                    $(this).parents('.input-file').prev().click();
-                    return false;
-                });
-                return element;
-            }
-        }
-    );
+    $(".custom-file-input").on("change", function () {
+        var fileName = $(this).val().split("\\").pop();
+        $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+    });
+}
+
+function googleAdsense() {
+    $(".adsbygoogle").each(function () { (adsbygoogle = window.adsbygoogle || []).push({}); });
 }
 
 $(document).ready(function () {
     inputFileTemplate();
-    $(".adsbygoogle").each(function () { (adsbygoogle = window.adsbygoogle || []).push({}); });
+    googleAdsense();
 });

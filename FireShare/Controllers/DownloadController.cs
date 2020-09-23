@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using FireShare.Attributes;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FireShare.Controllers
 {
+    [GenerateAntiforgeryTokenCookie]
     public class DownloadController : Controller
     {
         [HttpGet("/download")]

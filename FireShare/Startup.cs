@@ -93,6 +93,13 @@ namespace FireShare
                         .AllowAnyHeader());
             });
 
+            services.AddAntiforgery(options =>
+            {
+                options.FormFieldName = "RequestVerificationToken";
+                options.HeaderName = "X-CSRF-TOKEN-REQUEST";
+                options.SuppressXFrameOptionsHeader = false;
+            });
+
             services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromHours(2);
@@ -121,6 +128,8 @@ namespace FireShare
             services.Configure<GzipCompressionProviderOptions>(options => { options.Level = CompressionLevel.Fastest; });
 
             services.AddHangfireServer();
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

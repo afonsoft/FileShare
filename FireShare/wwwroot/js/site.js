@@ -11,7 +11,10 @@ function UploadSubimit(oFormElement, action) {
     $("#progress").show();
     $.ajax({
         url: action,
-        headers: { 'RequestVerificationToken': getCookie('RequestVerificationToken') },
+        headers: {
+            'RequestVerificationToken': $('#RequestVerificationToken').val(),
+            'X-CSRF-TOKEN-REQUEST': $('#RequestVerificationToken').val(),
+        },
         type: 'POST',
         data: formData,
         cache: false,
@@ -41,14 +44,21 @@ function UploadSubimit(oFormElement, action) {
         },
         error: function (xhr, ajaxOptions, thrownError) {
             $("#progress").hide();
-            showAlertDanger(xhr.status + '-' + xhr.statusText + '<br/>' + thrownError);
+            console.log(xhr.status + ' - ' + xhr.statusText + ' - ' + xhr.responseText);
+            var output = '';
+            for (var entry in xhr.responseJSON) {
+                output += entry + ' - ' + xhr.responseJSON[entry] + '<br/>';
+            }
+            console.log(output);
+            showAlertDanger("Error in file upload")
+            bootbox.alert(xhr.status + ' - ' + xhr.statusText + '<br/>' + output);
         }
     });
     return false;
 };
 
 function showAlertDanger(message) {
-    $("#alertText").text(message);
+    $("#alertText").html(message);
     $("#alertShow").show();
 }
 

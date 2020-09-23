@@ -151,7 +151,8 @@ namespace FireShare.Controllers
                 if (!string.IsNullOrEmpty(fileNameFinaliy) && System.IO.File.Exists(fileNameFinaliy))
                     System.IO.File.Delete(fileNameFinaliy);
                 ModelState.AddModelError("Error", ex.Message);
-                ModelState.AddModelError("InnerException", ex.InnerException.Message);
+                if (ex.InnerException != null)
+                    ModelState.AddModelError("InnerException", ex.InnerException.Message);
                 return BadRequest(ModelState);
             }
         }

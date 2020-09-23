@@ -11,10 +11,7 @@ function UploadSubimit(oFormElement, action) {
     $("#progress").show();
     $.ajax({
         url: action,
-        headers: {
-            'RequestVerificationToken': $('#RequestVerificationToken').val(),
-            'X-CSRF-TOKEN-REQUEST': $('#RequestVerificationToken').val(),
-        },
+        headers: { 'RequestVerificationToken': $('#RequestVerificationToken').val() },
         type: 'POST',
         data: formData,
         cache: false,

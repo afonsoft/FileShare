@@ -93,13 +93,6 @@ namespace FireShare
                         .AllowAnyHeader());
             });
 
-            services.AddAntiforgery(options =>
-            {
-                options.FormFieldName = "RequestVerificationToken";
-                options.HeaderName = "X-CSRF-TOKEN-REQUEST";
-                options.SuppressXFrameOptionsHeader = false;
-            });
-
             services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromHours(2);

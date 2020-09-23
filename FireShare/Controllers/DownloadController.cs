@@ -1,11 +1,30 @@
 ﻿using FireShare.Attributes;
+using FireShare.Repository;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace FireShare.Controllers
 {
     [GenerateAntiforgeryTokenCookie]
     public class DownloadController : Controller
     {
+        private readonly ApplicationDbContext _context;
+        private readonly ILogger<DownloadController> _logger;
+        private readonly string _targetFilePath;
+
+        public DownloadController(ILogger<DownloadController> logger, ApplicationDbContext context, IWebHostEnvironment env)
+        {
+            _logger = logger;
+            _context = context;
+            _targetFilePath = Path.Combine(env.WebRootPath, "FILES");
+        }
+
+
         [HttpGet("/download")]
         public IActionResult Index()
         {
@@ -13,12 +32,29 @@ namespace FireShare.Controllers
         }
 
         [HttpGet("/download/{hashCode}")]
-        public IActionResult Index(string hashCode)
+        public async Task<IActionResult> Index(string hashCode)
         {
             if (string.IsNullOrEmpty(hashCode))
                 return RedirectToAction("index", "home");
 
-            return View(new FireShare.Models.FileModel { Id = System.Guid.NewGuid(), Hash = "ASDASDASDASD", Size = 12313123123, UntrustedName = "asdasd.ass", TrustedName="arquivo.zip", Path="c:\\", UploadDT = System.DateTime.Now });
+            var file = await _context.Files.FirstOrDefaultAsync(x => x.Hash == hashCode);
+
+            if(file == null)
+                return RedirectToAction("index", "home");
+
+            var model = new FireShare.Models.FileModel
+            {
+                Hash = hashCode,
+                Id = file.Id,
+                Path = Path.Combine(_targetFilePath, file.StorageName),
+                UntrustedName = file.StorageName,
+                Size = file.Size,
+                TrustedName = file.Name,
+                Type = file.Type,
+                UploadDT = file.CreationDateTime
+            };
+
+            return View(model);
         }
     }
 }

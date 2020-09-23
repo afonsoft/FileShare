@@ -1,22 +1,63 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<!--[if lt IE 7 ]><html lang="pt" class="no-touch no-js ie6"><![endif]-->
+<!--[if IE 7 ]><html lang="pt" class="no-touch no-js ie7"><![endif]-->
+<!--[if IE 8 ]><html lang="pt" class="no-touch no-js ie8"><![endif]-->
+<!--[if IE 9 ]><html lang="pt" class="no-touch no-js ie9"><![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--><html lang="pt" class="no-touch no-js no-ie"><!--<![endif]-->
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=no">
+    <meta name="pinterest" content="nopin" />
+    <meta name="referrer" content="origin" />
+    <meta name="robots" content="index, follow" />
+
+    <meta property="og:description" content="FileShare is the simplest way to send your files around the world">
+    <meta property="og:title" content="FileShare">
+    <meta property="og:image" content="https://files.afonsoft.com.br/img/FileShareUpload128.png">
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+
+    <meta itemprop="name" content="FileShare"/>
+	<meta itemprop="description" content="FileShare is the simplest way to send your files around the world. Share large files up to 2GB for free."/>
+	<meta itemprop="image" content="https://files.afonsoft.com.br/img/FileShareUpload128.png"/>
+	<meta itemprop="url" content="https://files.afonsoft.com.br"/>
+
+	<meta name="twitter:card" content="FileShare is the simplest way to send your files around the world"/>
+	<meta name="twitter:title" content="FileShare"/>
+	<meta name="twitter:description" content="FileShare is the simplest way to send your files around the world. Share large files up to 2GB for free."/>
+	<meta name="twitter:image" content="https://files.afonsoft.com.br/img/FileShareUpload128.png"/>
+
+    <meta name="description" content="FileShare is the simplest way to send your files around the world. Share large files up to 2GB for free.">
+    <meta name="author" content="FileShare">
+    <link rel="canonical" href="https://files.afonsoft.com.br/" />
+
+    <meta name="application-name" content="FileShare"/>
+
+    <link rel="shortcut icon" href="https://files.afonsoft.com.br/img/FileShareUpload64.png" />
+    <link rel="icon" sizes="64x64" href="https://files.afonsoft.com.br/img/FileShareUpload64.png">
+    <link rel="icon" sizes="128x128" href="https://files.afonsoft.com.br/img/FileShareUpload128.png">
+    <link rel="icon" sizes="256x256" href="https://files.afonsoft.com.br/img/FileShareUpload256.png">
+
+     <!-- iOS: -->
+    <link rel="apple-touch-icon-precomposed" href="https://files.afonsoft.com.br/img/FileShareUpload256.png">
+    <link rel="apple-touch-icon-precomposed" sizes="128x128" href="https://files.afonsoft.com.br/img/FileShareUpload128.png">
+    <link rel="apple-touch-icon-precomposed" sizes="256x256" href="https://files.afonsoft.com.br/img/FileShareUpload256.png">
+    <link rel="apple-touch-icon-precomposed" sizes="512x512" href="https://files.afonsoft.com.br/img/FileShareUpload512.png">
+
     <title>@ViewData["Title"] - FireShare</title>
+    
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
-    <script data-ad-client="ca-pub-2122647083447667" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-    
-    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-23515540-6"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'UA-23515540-6');
-    </script>
-    <!-- End Global site tag (gtag.js) - Google Analytics -->
     <!-- Google Tag Manager -->
     <script>
         (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -28,10 +69,6 @@
     <!-- End Google Tag Manager -->
 </head>
 <body>
-    <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MNPBLZ4"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <!-- End Google Tag Manager (noscript) -->
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
@@ -53,7 +90,7 @@
             </div>
         </nav>
     </header>
-    <div class="container">
+    <div class="container-fluid">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
@@ -80,7 +117,17 @@
 
     @RenderSection("Scripts", required: false)
 
-  
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-23515540-6');
+    </script>
 
+    <script>
+        [].forEach.call(document.querySelectorAll('.adsbygoogle'), function(){
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        });
+    </script>
 </body>
 </html>

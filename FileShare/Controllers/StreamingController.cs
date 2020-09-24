@@ -16,6 +16,8 @@ using FileShare.Repository.Model;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Globalization;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
+using System.Net.Mime;
 
 namespace FileShare.Controllers
 {
@@ -165,6 +167,28 @@ namespace FileShare.Controllers
                 if (ex.InnerException != null)
                     ModelState.AddModelError("InnerException", ex.InnerException.Message);
                 
+                return BadRequest(ModelState);
+            }
+        }
+        #endregion
+
+        #region UploadFileStream
+        [DisableFormValueModelBinding]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DownloadFileStream(Models.FileModel fileModel)
+        {
+            var file = await _context.Files.FirstOrDefaultAsync(x => x.Hash == fileModel.Hash.ToUpper().Trim());
+
+            if (System.IO.File.Exists(fileModel.Path))
+            {
+                var targetStream = new MemoryStream(await System.IO.File.ReadAllBytesAsync(fileModel.Path));
+                var fileStream = new FileStreamResult(targetStream, MediaTypeNames.Application.Zip);
+                fileStream.FileDownloadName = fileModel.UntrustedName;
+                return fileStream;
+            }
+            else
+            {
+                ModelState.AddModelError("Error", $"The request couldn't be processed (Error 0).");
                 return BadRequest(ModelState);
             }
         }

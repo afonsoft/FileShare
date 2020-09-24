@@ -38,8 +38,10 @@
 					    </div>
 				    </div>
 				    <div class="d-flex justify-content-center form_container">
-					    <form id="downloadForm" action="Streaming/DownloadFileStream" method="post" asp-antiforgery="true"> 
-						    <div class="form-group mb-3">
+					    <form id="downloadForm" asp-controller="Streaming" asp-action="DownloadFileStream" method="post" asp-antiforgery="true"> 
+						    
+                            <input type="hidden" asp-for="@Model.Path" />
+                            <div class="form-group mb-3">
 		                        @Model.Hash
                             </div>
                             <div class="form-group mb-3">

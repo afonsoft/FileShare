@@ -37,6 +37,9 @@ $(document).ready(function () {
 function UploadSubimit() {
     var formData = new FormData(document.getElementById('uploadForm'));
     $("#progress").show();
+    $("#alertShow").hide();
+    $("#progressbar").css("width","0%");
+    $("#progressbar").html("0%");
     $.ajax({
         url: 'Streaming/UploadFileStream',
         headers: {
@@ -73,6 +76,7 @@ function UploadSubimit() {
         error: function (xhr, ajaxOptions, thrownError) {
             $("#progress").hide();
             console.log(xhr.status + ' - ' + xhr.statusText + ' - ' + xhr.responseText);
+            console.log(thrownError);
             var output = '';
             for (var entry in xhr.responseJSON) {
                 output += entry + ' - ' + xhr.responseJSON[entry] + '<br/>';

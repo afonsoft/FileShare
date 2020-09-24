@@ -1,9 +1,9 @@
-﻿using FireShare.Configuration;
+﻿using FileShare.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
-namespace FireShare.Extensions
+namespace FileShare.Extensions
 {
     public static class HostingEnvironmentExtensions
     {

@@ -1,11 +1,11 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using FireShare.Models;
-using FireShare.Repository;
-using FireShare.Attributes;
+using FileShare.Models;
+using FileShare.Repository;
+using FileShare.Attributes;
 
-namespace FireShare.Controllers
+namespace FileShare.Controllers
 {
     [GenerateAntiforgeryTokenCookie]
     public class HomeController : Controller

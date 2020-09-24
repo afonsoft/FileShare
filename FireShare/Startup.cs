@@ -2,10 +2,10 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using Afonsoft.Logger;
-using FireShare.Extensions;
-using FireShare.Interfaces;
-using FireShare.Jobs;
-using FireShare.Repository;
+using FileShare.Extensions;
+using FileShare.Interfaces;
+using FileShare.Jobs;
+using FileShare.Repository;
 using Hangfire;
 using Hangfire.Console;
 using Hangfire.SQLite;
@@ -22,7 +22,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace FireShare
+namespace FileShare
 {
     public class Startup
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace FireShare.Models
+namespace FileShare.Models
 {
     public class ErrorViewModel
     {

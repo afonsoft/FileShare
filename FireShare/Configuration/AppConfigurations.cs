@@ -2,7 +2,7 @@
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 
-namespace FireShare.Configuration
+namespace FileShare.Configuration
 {
     public static class AppConfigurations
     {

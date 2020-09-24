@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FireShare.Attributes
+namespace FileShare.Attributes
 {
 
     public class GenerateAntiforgeryTokenCookieAttribute : ResultFilterAttribute

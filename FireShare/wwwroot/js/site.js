@@ -5,13 +5,19 @@ function getCookie(name) {
     var parts = value.split("; " + name + "=");
     if (parts.length == 2) return parts.pop().split(";").shift();
 }
+function setCookie(cname, cvalue) {
+    var d = new Date();
+    d.setTime(d.getTime() + (1 * 24 * 60 * 60 * 1000));
+    var expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
 
-function UploadSubimit(oFormElement, action) {
-    var formData = new FormData(oFormElement);
+function UploadSubimit() {
+    var formData = new FormData(document.getElementById('uploadForm'));
     $("#progress").show();
     $.ajax({
-        url: action,
-        headers: { 'RequestVerificationToken': $('#RequestVerificationToken').val() },
+        url: 'Streaming/UploadFileStream',
+        headers: { 'RequestVerificationToken': getCookie('RequestVerificationToken') },
         type: 'POST',
         data: formData,
         cache: false,

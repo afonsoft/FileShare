@@ -1,6 +1,6 @@
 ﻿using Hangfire.Server;
 
-namespace FireShare.Interfaces
+namespace FileShare.Interfaces
 {
     public interface IHangfireJob
     {

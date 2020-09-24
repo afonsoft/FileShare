@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace FireShare.Models
+namespace FileShare.Models
 {
     public class FileModel
     {

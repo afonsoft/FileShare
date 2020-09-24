@@ -45,7 +45,7 @@
     <link rel="apple-touch-icon-precomposed" sizes="256x256" href="https://files.afonsoft.com.br/img/FileShareUpload256.png">
     <link rel="apple-touch-icon-precomposed" sizes="512x512" href="https://files.afonsoft.com.br/img/FileShareUpload512.png">
 
-    <title>@ViewData["Title"] - FireShare</title>
+    <title>@ViewData["Title"] - FileShare</title>
     
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
@@ -71,7 +71,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">FireShare</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">FileShare</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -97,7 +97,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container-fluid">
-            &copy; 2020 - FireShare - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2020 - FileShare - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
             @Html.AntiForgeryToken()
         </div>
     </footer>
@@ -131,6 +131,8 @@
         gtag('js', new Date());
         gtag('config', 'UA-23515540-6');
     </script>
-
+     <script>
+            setCookie('RequestVerificationToken', $("input[name*='__RequestVerificationToken']").val());
+    </script>
 </body>
 </html>

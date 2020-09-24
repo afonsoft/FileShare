@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace FireShare.Migrations
+namespace FileShare.Migrations
 {
     public partial class InitialCreate : Migration
     {

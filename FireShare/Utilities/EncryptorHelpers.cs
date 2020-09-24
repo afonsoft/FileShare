@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace FireShare.Utilities
+namespace FileShare.Utilities
 {
     public static class EncryptorHelpers
     {

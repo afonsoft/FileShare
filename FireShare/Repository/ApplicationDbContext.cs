@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using FireShare.Repository.Mapping;
-using FireShare.Repository.Model;
+using FileShare.Repository.Mapping;
+using FileShare.Repository.Model;
 
-namespace FireShare.Repository
+namespace FileShare.Repository
 {
     public class ApplicationDbContext : DbContext
     { 

@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using FireShare.Interfaces;
+using FileShare.Interfaces;
 
-namespace FireShare.Repository
+namespace FileShare.Repository
 {
     /// <summary>
     /// Base para um DbSet

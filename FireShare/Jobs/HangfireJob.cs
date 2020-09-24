@@ -1,10 +1,10 @@
-﻿using FireShare.Interfaces;
+﻿using FileShare.Interfaces;
 using Hangfire;
 using Hangfire.Console;
 using Hangfire.Server;
 using System;
 
-namespace FireShare.Jobs
+namespace FileShare.Jobs
 {
     public class HangfireJob : IHangfireJob
     {

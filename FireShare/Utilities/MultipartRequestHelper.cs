@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 
-namespace FireShare.Utilities
+namespace FileShare.Utilities
 {
     public static class MultipartRequestHelper
     {

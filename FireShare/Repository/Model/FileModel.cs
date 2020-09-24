@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace FireShare.Repository.Model
+namespace FileShare.Repository.Model
 {
     public class FileModel
     {

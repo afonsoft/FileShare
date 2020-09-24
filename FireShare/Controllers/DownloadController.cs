@@ -1,5 +1,5 @@
-﻿using FireShare.Attributes;
-using FireShare.Repository;
+﻿using FileShare.Attributes;
+using FileShare.Repository;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +8,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace FireShare.Controllers
+namespace FileShare.Controllers
 {
     [GenerateAntiforgeryTokenCookie]
     public class DownloadController : Controller
@@ -42,7 +42,7 @@ namespace FireShare.Controllers
             if(file == null)
                 return RedirectToAction("index", "home");
 
-            var model = new FireShare.Models.FileModel
+            var model = new FileShare.Models.FileModel
             {
                 Hash = hashCode,
                 Id = file.Id,

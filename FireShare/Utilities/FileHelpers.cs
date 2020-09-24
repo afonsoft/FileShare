@@ -6,7 +6,7 @@ using System.Linq;
 using Microsoft.Net.Http.Headers;
 using System.Threading.Tasks;
 
-namespace FireShare.Utilities
+namespace FileShare.Utilities
 {
     public static class FileHelpers
     {

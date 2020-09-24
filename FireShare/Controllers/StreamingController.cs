@@ -7,17 +7,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
-using FireShare.Attributes;
-using FireShare.Utilities;
-using FireShare.Repository;
+using FileShare.Attributes;
+using FileShare.Utilities;
+using FileShare.Repository;
 using Microsoft.AspNetCore.Hosting;
 using System;
-using FireShare.Repository.Model;
+using FileShare.Repository.Model;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Globalization;
 using System.Text;
 
-namespace FireShare.Controllers
+namespace FileShare.Controllers
 {
     public class StreamingController : Controller
     {
@@ -41,7 +41,6 @@ namespace FireShare.Controllers
 
         #region UploadFileStream
         [HttpPost]
-        //[ValidateAntiForgeryToken]
         [DisableFormValueModelBinding]
         public async Task<IActionResult> UploadFileStream()
         {
@@ -62,6 +61,12 @@ namespace FireShare.Controllers
                 var reader = new MultipartReader(boundary, HttpContext.Request.Body);
 
                 var section = await reader.ReadNextSectionAsync();
+
+                if(section == null)
+                {
+                    ModelState.AddModelError("Error", $"The request couldn't be processed (Error 1).");
+                    return BadRequest(ModelState);
+                }
 
                 while (section != null)
                 {

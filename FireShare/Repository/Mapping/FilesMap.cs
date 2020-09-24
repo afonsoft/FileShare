@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using FireShare.Repository.Model;
+using FileShare.Repository.Model;
 
-namespace FireShare.Repository.Mapping
+namespace FileShare.Repository.Mapping
 {
     public class FilesMap : IEntityTypeConfiguration<FileModel>
     {

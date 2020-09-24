@@ -12,12 +12,37 @@ function setCookie(cname, cvalue) {
     document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
 }
 
+
+function inputFileTemplate() {
+    $(".custom-file-input").on("change", function () {
+        var fileName = $(this).val().split("\\").pop();
+        $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+    });
+}
+
+function googleAdsense() {
+    $(".adsbygoogle").each(function () { (adsbygoogle = window.adsbygoogle || []).push({}); });
+}
+
+function showAlertDanger(message) {
+    $("#alertText").html(message);
+    $("#alertShow").show();
+}
+
+$(document).ready(function () {
+    inputFileTemplate();
+    googleAdsense();
+});
+
 function UploadSubimit() {
     var formData = new FormData(document.getElementById('uploadForm'));
     $("#progress").show();
     $.ajax({
         url: 'Streaming/UploadFileStream',
-        headers: { 'RequestVerificationToken': getCookie('RequestVerificationToken') },
+        headers: {
+            'RequestVerificationToken': getCookie('RequestVerificationToken'),
+            'X-CSRF-TOKEN-REQUEST': document.getElementById('RequestVerificationToken')
+        },
         type: 'POST',
         data: formData,
         cache: false,
@@ -59,24 +84,3 @@ function UploadSubimit() {
     });
     return false;
 };
-
-function showAlertDanger(message) {
-    $("#alertText").html(message);
-    $("#alertShow").show();
-}
-
-function inputFileTemplate() {
-    $(".custom-file-input").on("change", function () {
-        var fileName = $(this).val().split("\\").pop();
-        $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
-    });
-}
-
-function googleAdsense() {
-    $(".adsbygoogle").each(function () { (adsbygoogle = window.adsbygoogle || []).push({}); });
-}
-
-$(document).ready(function () {
-    inputFileTemplate();
-    googleAdsense();
-});

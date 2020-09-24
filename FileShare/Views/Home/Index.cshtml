@@ -26,10 +26,11 @@
 					    </div>
 				    </div>
 				    <div class="d-flex justify-content-center form_container">
+                        @Html.AntiForgeryToken()
 					    <form id="uploadForm" action="Streaming/UploadFileStream" method="post" enctype="multipart/form-data">
 						    <div class="form-group mb-3">
 		                        <div class="custom-file">
-    		                        <input type="file" class="custom-file-input" />			
+    		                        <input class="custom-file-input" id="file" type="file" name="file" />			
                                     <label class="custom-file-label" for="customFile">Choose file</label>
 		                        </div>
                             </div>
@@ -50,7 +51,7 @@
                                     </button>
                                 </div>
                             </div>
-					    </form>
+                        </form>
 				    </div>
 			    </div>
 		    </div>

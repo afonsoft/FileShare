@@ -37,7 +37,7 @@ namespace FileShare.Controllers
             if (string.IsNullOrEmpty(hashCode))
                 return RedirectToAction("index", "home");
 
-            var file = await _context.Files.FirstOrDefaultAsync(x => x.Hash == hashCode);
+            var file = await _context.Files.FirstOrDefaultAsync(x => x.Hash == hashCode.ToUpper().Trim());
 
             if(file == null)
                 return RedirectToAction("index", "home");

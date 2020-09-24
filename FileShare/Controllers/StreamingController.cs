@@ -49,7 +49,7 @@ namespace FileShare.Controllers
             {
                 if (!MultipartRequestHelper.IsMultipartContentType(Request.ContentType))
                 {
-                    ModelState.AddModelError("Error", $"The request couldn't be processed (Error 1).");
+                    ModelState.AddModelError("Error", $"The request couldn't be processed (Error 0).");
                     return BadRequest(ModelState);
                 }
 
@@ -62,7 +62,7 @@ namespace FileShare.Controllers
 
                 var section = await reader.ReadNextSectionAsync();
 
-                if(section == null)
+                if (section == null)
                 {
                     ModelState.AddModelError("Error", $"The request couldn't be processed (Error 1).");
                     return BadRequest(ModelState);
@@ -102,8 +102,7 @@ namespace FileShare.Controllers
                                 bufferSize: 1024,
                                 leaveOpen: true))
                             {
-                                // The value length limit is enforced by 
-                                // MultipartBodyLengthLimit
+
                                 var value = await streamReader.ReadToEndAsync();
 
                                 if (string.Equals(value, "undefined", StringComparison.OrdinalIgnoreCase))
@@ -123,8 +122,6 @@ namespace FileShare.Controllers
                         }
                     }
 
-                    // Drain any remaining section body that hasn't been consumed and
-                    // read the headers for the next section.
                     section = await reader.ReadNextSectionAsync();
                 }
 
@@ -138,6 +135,13 @@ namespace FileShare.Controllers
                     ModelState.AddModelError("Error", "The request couldn't be processed (Error 5).");
                     return BadRequest(ModelState);
                 }
+
+                if (string.IsNullOrEmpty(trustedFileNameForDisplay) || streamedFileContent.Length <= 0)
+                {
+                    ModelState.AddModelError("Error", "The request couldn't be processed (Error 6).");
+                    return BadRequest(ModelState);
+                }
+
 
                 string trustedFileNameForFileStorage = Path.GetRandomFileName();
                 fileNameFinaliy = Path.Combine(_targetFilePath, trustedFileNameForFileStorage);
@@ -155,9 +159,12 @@ namespace FileShare.Controllers
             {
                 if (!string.IsNullOrEmpty(fileNameFinaliy) && System.IO.File.Exists(fileNameFinaliy))
                     System.IO.File.Delete(fileNameFinaliy);
+
                 ModelState.AddModelError("Error", ex.Message);
+                
                 if (ex.InnerException != null)
                     ModelState.AddModelError("InnerException", ex.InnerException.Message);
+                
                 return BadRequest(ModelState);
             }
         }

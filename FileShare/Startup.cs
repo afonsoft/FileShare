@@ -107,6 +107,13 @@ namespace FileShare
                 options.MultipartHeadersLengthLimit = int.MaxValue;
             });
 
+            services.AddAntiforgery(options =>
+            {
+                options.FormFieldName = "RequestVerificationToken";
+                options.HeaderName = "X-CSRF-TOKEN-REQUEST";
+                options.SuppressXFrameOptionsHeader = false;
+            });
+
             services.AddTransient<IHangfireJob, HangfireJob>();
 
 

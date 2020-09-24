@@ -98,7 +98,6 @@
     <footer class="border-top footer text-muted">
         <div class="container-fluid">
             &copy; 2020 - FileShare - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-            @Html.AntiForgeryToken()
         </div>
     </footer>
     <environment include="Development">
@@ -130,9 +129,6 @@
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
         gtag('config', 'UA-23515540-6');
-    </script>
-     <script>
-            setCookie('RequestVerificationToken', $("input[name*='__RequestVerificationToken']").val());
     </script>
 </body>
 </html>

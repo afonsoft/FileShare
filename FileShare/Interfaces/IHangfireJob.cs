@@ -6,5 +6,6 @@ namespace FileShare.Interfaces
     {
         void Initialize();
         void JobDeleteOldFiles(PerformContext context);
+        void JobDeleteFilesNotExist(PerformContext context);
     }
 }

@@ -3,11 +3,13 @@ using System.IO;
 using System.IO.Compression;
 using Afonsoft.Logger;
 using FileShare.Extensions;
+using FileShare.Filters;
 using FileShare.Interfaces;
 using FileShare.Jobs;
 using FileShare.Repository;
 using Hangfire;
 using Hangfire.Console;
+using Hangfire.Dashboard;
 using Hangfire.SQLite;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -82,6 +84,7 @@ namespace FileShare
             services.AddHangfire(x =>
             {
                 x.UseSQLiteStorage(connectionString);
+                x.UseRecommendedSerializerSettings();
                 x.UseConsole();
             });
 
@@ -119,7 +122,7 @@ namespace FileShare
                 options.SuppressXFrameOptionsHeader = false;
             });
 
-            services.AddTransient<IHangfireJob, HangfireJob>();
+            services.TryAddSingleton<IHangfireJob, HangfireJob>();
 
 
             services.AddResponseCompression(options =>
@@ -133,12 +136,10 @@ namespace FileShare
             services.Configure<GzipCompressionProviderOptions>(options => { options.Level = CompressionLevel.Fastest; });
 
             services.AddHangfireServer();
-
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
 
             app.UseDeveloperExceptionPage();
@@ -151,8 +152,15 @@ namespace FileShare
             app.UseRouting();
             app.UseCors("CorsPolicy");
             app.UseAuthorization();
-
-            app.UseHangfireDashboard();
+            
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions
+            {
+#if RELEASE
+                IsReadOnlyFunc = (DashboardContext context) => true,
+#endif
+                DisplayStorageConnectionString = false,
+                Authorization = new[] { new AllowAllDashboardAuthorizationFilter() }
+            });
 
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
@@ -167,10 +175,10 @@ namespace FileShare
                 endpoints.MapRazorPages();
             });
 
-            InitializeHangfire(new HangfireJob());
+            InitializeHangfire(serviceProvider.GetService<IHangfireJob>());
         }
 
-        private void InitializeHangfire(HangfireJob job)
+        private void InitializeHangfire(IHangfireJob job)
         {
             job.Initialize();
         }

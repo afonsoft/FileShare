@@ -38,8 +38,9 @@
 					    </div>
 				    </div>
 				    <div class="d-flex justify-content-center form_container">
-					    <form id="downloadForm" asp-controller="Streaming" asp-action="DownloadFileStream" method="post" asp-antiforgery="true"> 
-						    
+                        <form id="downloadForm" asp-controller="Streaming" asp-action="DownloadFileStream" method="post" asp-antiforgery="true" style="width:90%;">
+                            
+                            @Html.AntiForgeryToken()
                             <input type="hidden" asp-for="@Model.Id" />
                             <input type="hidden" asp-for="@Model.TrustedName" />
                             <input type="hidden" asp-for="@Model.Hash" />
@@ -55,23 +56,23 @@
                                     <div class="col">@Model.TrustedName</div>
                                 </div>
                                 <div class="form-group mb-3 row">
-		                            <label class="col-2" asp-for="@Model.Size" style="font-weight: bold;"></label>
-                                    <div class="col">@Model.Size</div>
+                                    <label class="col-2" asp-for="@Model.Size" style="font-weight: bold;"></label>
+                                    <div class="col" id="filesize"></div>
                                 </div>
                                 <div class="form-group mb-3 row">
-		                            <label class="col-2" asp-for="@Model.Type" style="font-weight: bold;"></label>
+                                    <label class="col-2" asp-for="@Model.Type" style="font-weight: bold;"></label>
                                     <div class="col">@Model.Type</div>
                                 </div>
-                                <div class="form-group mb-3 row" >
+                                <div class="form-group mb-3 row">
                                     <label class="col-2" asp-for="@Model.UploadDT" style="font-weight: bold;"></label>
                                     <div class="col">@Model.UploadDT</div>
-						        </div>
+                                </div>
                                 <div class="d-flex justify-content-center mt-3 login_container row">
                                     <div id="countdown"></div>
                                     <button type="submit" disabled name="button" id="btnDownload" class="btn login_btn">Download File</button>
                                 </div>
                             </div>
-					    </form>
+                        </form>
 				    </div>
 			    </div>
 		    </div>
@@ -102,3 +103,9 @@
         </div>
     </div>
 </div>
+
+@section Scripts{ 
+    <script>
+        $("#filesize").html(getFileSizeString(@Model.Size));
+    </script>
+}

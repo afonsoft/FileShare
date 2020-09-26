@@ -47,14 +47,15 @@ namespace FileShare.Jobs
             {
                 context.WriteLine("Job Inicializado");
 
-                var filesInDb = await _context.Files.ToListAsync();
-                var filesInDrive = Directory.GetFiles(_targetFilePath);
+                var filesInDb = await _context.Files.Select(x => x.StorageName)
+                                            .ToListAsync();
 
-                var fdb = filesInDb.Select(x => x.Name).ToList();
+                var filesInDrive = Directory.GetFiles(_targetFilePath)
+                                            .Select(x => x.Split("\\").Last())
+                                            .ToList();
 
-                var filesNotExistInDb = "";
-                var filesNotExistInDrive = "";
-
+                var filesNotExistInDb = filesInDb.Where(x=>!filesInDrive.Contains(x)).ToList();
+                var filesNotExistInDrive = filesInDrive.Where(x => !filesInDb.Contains(x)).ToList(); 
 
                 context.WriteLine("Job Finalizado");
             }

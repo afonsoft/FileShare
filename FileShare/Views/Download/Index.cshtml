@@ -18,7 +18,7 @@
         </div>
     </div>
     <div class="row" style="margin-top: 80px;">
-        <div class="col-4">
+        <div class="col-3">
             <div align="center" class="center">
                 <!-- QuadradoResponsivo -->
                 <ins class="adsbygoogle"
@@ -29,9 +29,9 @@
                      data-full-width-responsive="true"></ins>
             </div>
         </div>
-        <div class="col-4">      
+        <div class="col-6">      
             <div class="d-flex justify-content-center h-100">
-			    <div class="user_card">
+			    <div class="user_card" style="width: 100%;">
 				    <div class="d-flex justify-content-center">
 					    <div class="brand_logo_container">
 						    <img src="https://files.afonsoft.com.br/img/FileShareDownload512.png" class="brand_logo" alt="Logo">
@@ -51,20 +51,20 @@
 
                             <div class="container-fluid">
                                 <div class="form-group mb-3 row">
-                                    <label asp-for="@Model.TrustedName"></label>
-                                    <div class="col">@Model.TrustedName</idv>
+                                    <label class="col-2" asp-for="@Model.TrustedName" style="font-weight: bold;"></label>
+                                    <div class="col">@Model.TrustedName</div>
                                 </div>
                                 <div class="form-group mb-3 row">
-		                            <label asp-for="@Model.Size"></label>
-                                    <div class="col">@Model.Size</idv>
+		                            <label class="col-2" asp-for="@Model.Size" style="font-weight: bold;"></label>
+                                    <div class="col">@Model.Size</div>
                                 </div>
                                 <div class="form-group mb-3 row">
-		                            <label asp-for="@Model.Type"></label>
-                                    <div class="col">@Model.Type</idv>
+		                            <label class="col-2" asp-for="@Model.Type" style="font-weight: bold;"></label>
+                                    <div class="col">@Model.Type</div>
                                 </div>
                                 <div class="form-group mb-3 row" >
-                                    <label asp-for="@Model.UploadDT"></label>
-                                    <div class="col">@Model.UploadDT</idv>
+                                    <label class="col-2" asp-for="@Model.UploadDT" style="font-weight: bold;"></label>
+                                    <div class="col">@Model.UploadDT</div>
 						        </div>
 						        <div class="d-flex justify-content-center mt-3 login_container row">
 				 	                <button type="submit" name="button" class="btn login_btn" >Download File</button>
@@ -75,7 +75,7 @@
 			    </div>
 		    </div>
         </div>
-        <div class="col-4">
+        <div class="col-3">
             <div align="center" class="center">
                 <!-- QuadradoResponsivo -->
                 <ins class="adsbygoogle"

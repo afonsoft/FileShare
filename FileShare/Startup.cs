@@ -102,9 +102,14 @@ namespace FileShare
             services.Configure<FormOptions>(options =>
             {
                 options.ValueLengthLimit = int.MaxValue;
-                options.MultipartBodyLengthLimit = int.MaxValue;
-                options.MultipartBoundaryLengthLimit = 256;
+                options.MultipartBodyLengthLimit = 6000000000;
+                options.MultipartBoundaryLengthLimit = 512;
                 options.MultipartHeadersLengthLimit = int.MaxValue;
+            });
+
+            services.Configure<IISServerOptions>(options =>
+            {
+                options.MaxRequestBodySize = 6000000000;
             });
 
             services.AddAntiforgery(options =>

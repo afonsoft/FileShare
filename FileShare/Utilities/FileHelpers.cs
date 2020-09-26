@@ -37,7 +37,13 @@ namespace FileShare.Utilities
                     }
                     else
                     {
-                        return memoryStream.ToArray();
+                        var bytes = memoryStream.ToArray();
+                        if (!IsValidFileExtensionAndSignature(bytes, permittedExtensions))
+                        {
+                            modelState.AddModelError("Error", "The file type isn't permitted or the file's signature doesn't match the file's extension.");
+                        }
+
+                        return bytes;
                     }
                 }
             }
@@ -48,6 +54,18 @@ namespace FileShare.Utilities
             }
 
             return new byte[0];
+        }
+
+        private static bool IsValidFileExtensionAndSignature(byte[] bytes, string[] permittedExtensions)
+        {
+            var ext = "." + FindMimeHelpers.GetExtensionsFromByte(bytes)[0];
+
+            if (string.IsNullOrEmpty(ext) || !permittedExtensions.Contains(ext))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private static bool IsValidFileExtensionAndSignature(string fileName, Stream data, string[] permittedExtensions)

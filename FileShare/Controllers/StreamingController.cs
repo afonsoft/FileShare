@@ -26,8 +26,14 @@ namespace FileShare.Controllers
         private readonly ApplicationDbContext _context;
         private readonly long _fileSizeLimit;
         private readonly ILogger<StreamingController> _logger;
-        private readonly string[] _permittedExtensions = { ".txt", ".zip", ".mpg", ".mp4", ".mp3", ".pdf" };
         private readonly string _targetFilePath;
+
+        #region PermittedExtensions
+        private readonly string[] _permittedExtensions =
+        {
+            ".txt", ".zip", ".mpg", ".mp4", ".mp3", ".pdf", ".doc", ".docx", ".aac", ".abw",".arc",".avi",".azw",".bin",".bz",".bz2",".csh"  ,".css"  ,".csv"  ,".doc"  ,".eot"  ,".epub" ,".gif"  ,".htm"  ,".html" ,".ico"  ,".ics"  ,".jar"  ,".jpeg" ,".jpg"  ,".js"   ,".json" ,".mid"  ,".midi" ,".mpeg" ,".mpkg" ,".odp"  ,".ods"  ,".odt"  ,".oga"  ,".ogv"  ,".ogx"  ,".otf"  ,".png"  ,".pdf"  ,".ppt"  ,".rar"  ,".rtf"  ,".sh"   ,".svg"  ,".swf"  ,".tar"  ,".tif"  ,".tiff" ,".ts"   ,".ttf"  ,".vsd"  ,".wav"  ,".weba" ,".webm" ,".webp" ,".woff" ,".woff2",".xhtml",".xls"  ,".xlsx" ,".xml"  ,".xul"  ,".zip"  ,".3gp"  ,".3g2"  ,".7z"
+        };
+        #endregion
 
         // Get the default form options so that we can use them to set the default 
         // limits for request body data.
@@ -153,7 +159,7 @@ namespace FileShare.Controllers
                     _logger.LogInformation($"Uploaded file '{trustedFileNameForDisplay}' saved to '{_targetFilePath}' as {trustedFileNameForFileStorage}");
                 }
 
-                var model = await SaveInDb(HttpContext.Request.HttpContext.Connection.RemoteIpAddress.ToString(), trustedFileNameForDisplay, trustedFileNameForFileStorage, streamedFileContent.Length);
+                var model = await SaveInDb(HttpContext.Request.HttpContext.Connection.RemoteIpAddress.ToString(), fileNameFinaliy, trustedFileNameForDisplay, trustedFileNameForFileStorage, streamedFileContent.Length);
 
                 return new OkObjectResult(model.Hash);
             }
@@ -172,18 +178,16 @@ namespace FileShare.Controllers
         }
         #endregion
 
-        #region UploadFileStream
-        [DisableFormValueModelBinding]
+        #region DownloadFileStream
         [ValidateAntiForgeryToken]
+        [HttpPost]
         public async Task<IActionResult> DownloadFileStream(Models.FileModel fileModel)
         {
-            var file = await _context.Files.FirstOrDefaultAsync(x => x.Hash == fileModel.Hash.ToUpper().Trim());
-
             if (System.IO.File.Exists(fileModel.Path))
             {
                 var targetStream = new MemoryStream(await System.IO.File.ReadAllBytesAsync(fileModel.Path));
-                var fileStream = new FileStreamResult(targetStream, MediaTypeNames.Application.Zip);
-                fileStream.FileDownloadName = fileModel.UntrustedName;
+                var fileStream = new FileStreamResult(targetStream, FindMimeHelpers.GetMimeFromFile(fileModel.Path));
+                fileStream.FileDownloadName = fileModel.TrustedName;
                 return fileStream;
             }
             else
@@ -195,7 +199,7 @@ namespace FileShare.Controllers
         #endregion
 
         #region Private
-        private async Task<Models.FileModel> SaveInDb(string remoteIpAddress, string fileNameForDisplay, string fileNameForFileStorage, long contentType)
+        private async Task<Models.FileModel> SaveInDb(string remoteIpAddress,string fileNameFinaliy, string fileNameForDisplay, string fileNameForFileStorage, long contentType)
         {
 
             var fileUploaded = new FileModel
@@ -206,7 +210,7 @@ namespace FileShare.Controllers
                 IP = remoteIpAddress,
                 Name = fileNameForDisplay,
                 StorageName = fileNameForFileStorage,
-                Type = Path.GetExtension(fileNameForDisplay).ToLowerInvariant(),
+                Type = FindMimeHelpers.GetMimeFromFile(fileNameFinaliy),
                 Hash = CreateHashFile(fileNameForDisplay, fileNameForFileStorage, remoteIpAddress, contentType)
             };
 

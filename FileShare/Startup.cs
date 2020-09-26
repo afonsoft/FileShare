@@ -3,6 +3,7 @@ using System.IO;
 using System.IO.Compression;
 using Afonsoft.Logger;
 using FileShare.Extensions;
+using FileShare.Filters;
 using FileShare.Interfaces;
 using FileShare.Jobs;
 using FileShare.Repository;
@@ -149,8 +150,11 @@ namespace FileShare
             
             app.UseHangfireDashboard("/hangfire", new DashboardOptions
             {
+#if RELEASE
                 IsReadOnlyFunc = (DashboardContext context) => true,
+#endif
                 DisplayStorageConnectionString = false,
+                Authorization = new[] { new AllowAllDashboardAuthorizationFilter() }
             });
 
             app.UseForwardedHeaders(new ForwardedHeadersOptions

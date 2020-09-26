@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace FileShare.Attributes
+namespace FileShare.Filters
 {
 
     public class GenerateAntiforgeryTokenCookieAttribute : ResultFilterAttribute

@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.IO.Compression;
 using Afonsoft.Logger;
 using FileShare.Extensions;
@@ -9,7 +8,6 @@ using FileShare.Jobs;
 using FileShare.Repository;
 using Hangfire;
 using Hangfire.Console;
-using Hangfire.Dashboard;
 using Hangfire.SQLite;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;

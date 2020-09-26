@@ -28,8 +28,8 @@ namespace FileShare
                     options.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(120);
                     
                     options.Limits.MaxRequestBodySize = 6000000000;
-                    options.Limits.MinRequestBodyDataRate = new MinDataRate(bytesPerSecond: 100, gracePeriod: TimeSpan.FromSeconds(10));
-                    options.Limits.MinResponseDataRate = new MinDataRate(bytesPerSecond: 100, gracePeriod: TimeSpan.FromSeconds(10));
+                    options.Limits.MinRequestBodyDataRate = new MinDataRate(100, TimeSpan.FromSeconds(10));
+                    options.Limits.MinResponseDataRate = new MinDataRate(100, TimeSpan.FromSeconds(10));
                     options.Limits.RequestHeadersTimeout =  TimeSpan.FromMinutes(5);
 
                 })

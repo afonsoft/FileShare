@@ -8,6 +8,7 @@ using FileShare.Jobs;
 using FileShare.Repository;
 using Hangfire;
 using Hangfire.Console;
+using Hangfire.Dashboard;
 using Hangfire.SQLite;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;

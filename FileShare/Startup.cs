@@ -114,7 +114,7 @@ namespace FileShare
                 options.SuppressXFrameOptionsHeader = false;
             });
 
-            services.AddTransient<IHangfireJob, HangfireJob>();
+            services.TryAddSingleton<IHangfireJob, HangfireJob>();
 
 
             services.AddResponseCompression(options =>
@@ -128,12 +128,10 @@ namespace FileShare
             services.Configure<GzipCompressionProviderOptions>(options => { options.Level = CompressionLevel.Fastest; });
 
             services.AddHangfireServer();
-
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
 
             app.UseDeveloperExceptionPage();
@@ -162,10 +160,10 @@ namespace FileShare
                 endpoints.MapRazorPages();
             });
 
-            InitializeHangfire(new HangfireJob());
+            InitializeHangfire(serviceProvider.GetService<IHangfireJob>());
         }
 
-        private void InitializeHangfire(HangfireJob job)
+        private void InitializeHangfire(IHangfireJob job)
         {
             job.Initialize();
         }

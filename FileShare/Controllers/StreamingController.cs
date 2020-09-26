@@ -161,7 +161,7 @@ namespace FileShare.Controllers
 
                 var model = await SaveInDb(HttpContext.Request.HttpContext.Connection.RemoteIpAddress.ToString(), fileNameFinaliy, trustedFileNameForDisplay, trustedFileNameForFileStorage, streamedFileContent.Length);
 
-                return new OkObjectResult(model.Hash);
+                return new OkObjectResult(model.Hash.Trim().ToLower());
             }
             catch (Exception ex)
             {

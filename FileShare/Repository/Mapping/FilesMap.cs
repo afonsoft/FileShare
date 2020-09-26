@@ -14,7 +14,7 @@ namespace FileShare.Repository.Mapping
             builder.Property(c => c.Id).HasColumnName("Id");
             builder.Property(c => c.Name).HasColumnName("Name").HasMaxLength(400);
             builder.Property(c => c.StorageName).HasColumnName("StorageName").HasMaxLength(400);
-            builder.Property(c => c.Type).HasColumnName("Type").HasMaxLength(250);
+            builder.Property(c => c.Type).HasColumnName("Type").HasMaxLength(200);
             builder.Property(c => c.Size).HasColumnName("Size");
             builder.Property(c => c.IP).HasColumnName("IP").HasMaxLength(100);
             builder.Property(c => c.Hash).HasColumnName("Hash").HasMaxLength(4000);

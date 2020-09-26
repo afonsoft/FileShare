@@ -16,6 +16,50 @@ namespace FileShare.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.8");
 
+            modelBuilder.Entity("FileShare.Repository.Model.ExtensionPermittedModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreationDateTime")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("CreationDateTime")
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("getdate()");
+
+                    b.Property<string>("Description")
+                        .HasColumnName("Description")
+                        .HasColumnType("TEXT")
+                        .HasMaxLength(400);
+
+                    b.Property<string>("Extension")
+                        .HasColumnName("Extension")
+                        .HasColumnType("TEXT")
+                        .HasMaxLength(10);
+
+                    b.Property<string>("MimeType")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("MimeType")
+                        .HasColumnType("TEXT")
+                        .HasMaxLength(200)
+                        .HasDefaultValue("application/octet-stream");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PermittedExtension");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("b430f084-9f68-4d2a-b2a9-fc2c4c422a83"),
+                            CreationDateTime = new DateTime(2020, 9, 26, 16, 47, 11, 196, DateTimeKind.Local).AddTicks(5026),
+                            Extension = ".zip",
+                            MimeType = "application/zip"
+                        });
+                });
+
             modelBuilder.Entity("FileShare.Repository.Model.FileModel", b =>
                 {
                     b.Property<Guid>("Id")
@@ -56,7 +100,7 @@ namespace FileShare.Migrations
                     b.Property<string>("Type")
                         .HasColumnName("Type")
                         .HasColumnType("TEXT")
-                        .HasMaxLength(250);
+                        .HasMaxLength(200);
 
                     b.HasKey("Id");
 

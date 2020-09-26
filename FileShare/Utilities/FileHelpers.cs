@@ -33,14 +33,14 @@ namespace FileShare.Utilities
                     }
                     else if (!IsValidFileExtensionAndSignature(contentDisposition.FileName.Value, memoryStream, permittedExtensions))
                     {
-                        modelState.AddModelError("Error", "The file type isn't permitted or the file's signature doesn't match the file's extension.");
+                        modelState.AddModelError("Error", $"The file type isn't permitted or the file's signature doesn't match the file's extension. {Path.GetExtension(contentDisposition.FileName.Value).ToLowerInvariant()}");
                     }
                     else
                     {
                         var bytes = memoryStream.ToArray();
                         if (!IsValidFileExtensionAndSignature(bytes, permittedExtensions))
                         {
-                            modelState.AddModelError("Error", "The file type isn't permitted or the file's signature doesn't match the file's extension.");
+                            modelState.AddModelError("Error", $"The file type isn't permitted or the file's signature doesn't match the file's extension. {FindMimeHelpers.GetMimeFromByte(bytes)}");
                         }
 
                         return bytes;
@@ -50,6 +50,7 @@ namespace FileShare.Utilities
             catch (Exception ex)
             {
                 modelState.AddModelError("Error", $"The upload failed. Please contact the Help Desk for support. Error: {ex.HResult}");
+                modelState.AddModelError("Exception", ex.Message);
                 modelState.AddModelError("StackTrace", ex.StackTrace);
             }
 

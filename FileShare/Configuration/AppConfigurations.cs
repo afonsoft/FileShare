@@ -11,10 +11,7 @@ namespace FileShare.Configuration
         public static IConfigurationRoot Get(string path, string environmentName = null, bool addUserSecrets = false)
         {
             var cacheKey = path + "#" + environmentName + "#" + addUserSecrets;
-            return ConfigurationCache.GetOrAdd(
-                cacheKey,
-                _ => BuildConfiguration(path, environmentName)
-            );
+            return ConfigurationCache.GetOrAdd(cacheKey, _ => BuildConfiguration(path, environmentName));
         }
 
         private static IConfigurationRoot BuildConfiguration(string path, string environmentName = null)

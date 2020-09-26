@@ -134,7 +134,10 @@ namespace FileShare
             services.Configure<BrotliCompressionProviderOptions>(options => { options.Level = CompressionLevel.Fastest; });
             services.Configure<GzipCompressionProviderOptions>(options => { options.Level = CompressionLevel.Fastest; });
 
-            services.AddHangfireServer();
+            services.AddHangfireServer(options => {
+                options.WorkerCount = 4;
+                options.SchedulePollingInterval = TimeSpan.FromMinutes(1);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -151,7 +154,7 @@ namespace FileShare
             app.UseRouting();
             app.UseCors("CorsPolicy");
             app.UseAuthorization();
-            
+
             app.UseHangfireDashboard("/hangfire", new DashboardOptions
             {
 #if RELEASE

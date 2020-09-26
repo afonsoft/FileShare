@@ -8,6 +8,7 @@ using FileShare.Jobs;
 using FileShare.Repository;
 using Hangfire;
 using Hangfire.Console;
+using Hangfire.Dashboard;
 using Hangfire.SQLite;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -82,6 +83,7 @@ namespace FileShare
             services.AddHangfire(x =>
             {
                 x.UseSQLiteStorage(connectionString);
+                x.UseRecommendedSerializerSettings();
                 x.UseConsole();
             });
 
@@ -144,8 +146,12 @@ namespace FileShare
             app.UseRouting();
             app.UseCors("CorsPolicy");
             app.UseAuthorization();
-
-            app.UseHangfireDashboard();
+            
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions
+            {
+                IsReadOnlyFunc = (DashboardContext context) => true,
+                DisplayStorageConnectionString = false,
+            });
 
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {

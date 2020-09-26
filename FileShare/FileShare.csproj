@@ -30,7 +30,6 @@
 	</PackageReference>
 	<PackageReference Include="Afonsoft.Extensions" Version="2020.5.5" />
 	<PackageReference Include="Afonsoft.Logger" Version="2019.8.26" />
-	<PackageReference Include="Hangfire" Version="1.7.14" />
 	<PackageReference Include="Hangfire.AspNetCore" Version="1.7.14" />
 	<PackageReference Include="Hangfire.Console" Version="1.4.2" />
 	<PackageReference Include="Hangfire.SqlServer" Version="1.7.14" />

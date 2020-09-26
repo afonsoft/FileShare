@@ -31,8 +31,23 @@ function showAlertDanger(message) {
 
 $(document).ready(function () {
     inputFileTemplate();
+    countDown();
     googleAdsense();
 });
+
+function countDown() {
+    $("#btnDownload").hide();
+    $("#countdown").countdown360({
+        radius: 60,
+        seconds: 60,
+        autostart: true,
+        onComplete: function () {
+            $("#countdown").hide();
+            $("#btnDownload").removeAttr("disabled");
+            $("#btnDownload").show();
+        }
+    });
+}
 
 function UploadSubimit() {
     var formData = new FormData(document.getElementById('uploadForm'));

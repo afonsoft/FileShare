@@ -66,9 +66,10 @@
                                     <label class="col-2" asp-for="@Model.UploadDT" style="font-weight: bold;"></label>
                                     <div class="col">@Model.UploadDT</div>
 						        </div>
-						        <div class="d-flex justify-content-center mt-3 login_container row">
-				 	                <button type="submit" name="button" class="btn login_btn" >Download File</button>
-				                </div>
+                                <div class="d-flex justify-content-center mt-3 login_container row">
+                                    <div id="countdown"></div>
+                                    <button type="submit" disabled name="button" id="btnDownload" class="btn login_btn">Download File</button>
+                                </div>
                             </div>
 					    </form>
 				    </div>

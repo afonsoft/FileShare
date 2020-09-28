@@ -1,5 +1,6 @@
 ﻿using FileShare.Interfaces;
 using FileShare.Repository;
+using FileShare.Repository.Model;
 using Hangfire;
 using Hangfire.Console;
 using Hangfire.Server;
@@ -65,7 +66,7 @@ namespace FileShare.Jobs
                     try
                     {
                         var fileToDelete = Path.Combine(_targetFilePath, file);
-                        if (File.Exists(fileToDelete) && !fileToDelete.Contains("index.htm"))
+                        if (File.Exists(fileToDelete) && !fileToDelete.Contains("index.htm") && !fileToDelete.Contains("Extensions.txt"))
                         {
                             File.Delete(fileToDelete);
                         }
@@ -164,7 +165,7 @@ namespace FileShare.Jobs
             isInProcessJobDeleteOldFiles = false;
         }
 
-        public void JobImportPermittedExtensions(PerformContext context)
+        public async void JobImportPermittedExtensions(PerformContext context)
         {
             if (isInProcessJobImportPermittedExtensions)
             {
@@ -178,7 +179,56 @@ namespace FileShare.Jobs
             {
                 context.WriteLine("Job Inicializado");
                 //Ler um arquivo txt com as extensões permitidas e salvar na base
-               
+                int totalSucess = 0;
+                int totalSkip = 0;
+                int totalError = 0;
+
+                var fileExtensions = Path.Combine(_targetFilePath, "Extensions.txt");
+                if (File.Exists(fileExtensions))
+                {
+                    string[] lines = File.ReadAllLines(fileExtensions);
+
+                    foreach (string line in lines)
+                    {
+                        try
+                        {
+                            string ext = line.Split(';')[0];
+
+                            if (!ext.StartsWith("."))
+                                ext = "." + ext;
+
+                            ext = ext.Trim().ToLower();
+
+                           if (! _context.PermittedExtension.Any(x=> x.Extension == ext))
+                            {
+                               await _context.PermittedExtension.AddAsync(new ExtensionPermittedModel()
+                                {
+                                    CreationDateTime = DateTime.Now,
+                                    Id = Guid.NewGuid(),
+                                    Extension = ext
+                                });
+                                await _context.SaveChangesAsync();
+                                totalSucess++;
+                            }
+                            else
+                            {
+                                totalSkip++;
+                            }
+                        }
+                        catch(Exception ex)
+                        {
+                            totalError++;
+                            context.WriteLine($"Erro na linha {line} : {ex}");
+                            _logger.LogError(ex, $"Erro on Job JobImportPermittedExtensions {context.BackgroundJob.Id}-{line}-{ex}");
+                        }
+                    }
+
+                    context.WriteLine($"Reultado: Sucessos ({totalSucess}) Ignorados ({totalSkip}) Falhas ({totalError})");
+                }
+                else
+                {
+                    context.WriteLine("Não tem o arquivo com as extensões para processar");
+                }
 
 
                 context.WriteLine("Job Finalizado");

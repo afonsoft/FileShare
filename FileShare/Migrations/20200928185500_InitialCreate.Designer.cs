@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FileShare.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200926194711_InitialCreate")]
+    [Migration("20200928185500_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -31,22 +31,10 @@ namespace FileShare.Migrations
                         .HasColumnType("TEXT")
                         .HasDefaultValueSql("getdate()");
 
-                    b.Property<string>("Description")
-                        .HasColumnName("Description")
-                        .HasColumnType("TEXT")
-                        .HasMaxLength(400);
-
                     b.Property<string>("Extension")
                         .HasColumnName("Extension")
                         .HasColumnType("TEXT")
                         .HasMaxLength(10);
-
-                    b.Property<string>("MimeType")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("MimeType")
-                        .HasColumnType("TEXT")
-                        .HasMaxLength(200)
-                        .HasDefaultValue("application/octet-stream");
 
                     b.HasKey("Id");
 
@@ -55,10 +43,9 @@ namespace FileShare.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("b430f084-9f68-4d2a-b2a9-fc2c4c422a83"),
-                            CreationDateTime = new DateTime(2020, 9, 26, 16, 47, 11, 196, DateTimeKind.Local).AddTicks(5026),
-                            Extension = ".zip",
-                            MimeType = "application/zip"
+                            Id = new Guid("d4bd2f98-4177-4f10-b089-78f665c39140"),
+                            CreationDateTime = new DateTime(2020, 9, 28, 15, 54, 59, 442, DateTimeKind.Local).AddTicks(5122),
+                            Extension = ".zip"
                         });
                 });
 

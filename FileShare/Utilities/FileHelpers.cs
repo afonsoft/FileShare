@@ -59,14 +59,21 @@ namespace FileShare.Utilities
 
         private static bool IsValidFileExtensionAndSignature(byte[] bytes, string[] permittedExtensions)
         {
-            var ext = "." + FindMimeHelpers.GetExtensionsFromByte(bytes)[0];
-
-            if (string.IsNullOrEmpty(ext) || !permittedExtensions.Contains(ext))
+            try
             {
-                return false;
-            }
+                var ext = "." + FindMimeHelpers.GetExtensionsFromByte(bytes)[0];
 
-            return true;
+                if (string.IsNullOrEmpty(ext) || !permittedExtensions.Contains(ext))
+                {
+                    return false;
+                }
+
+                return true;
+            }
+            catch
+            {
+                return true;
+            }
         }
 
         private static bool IsValidFileExtensionAndSignature(string fileName, Stream data, string[] permittedExtensions)

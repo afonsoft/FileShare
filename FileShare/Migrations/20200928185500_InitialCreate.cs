@@ -31,8 +31,6 @@ namespace FileShare.Migrations
                 {
                     Id = table.Column<Guid>(nullable: false),
                     Extension = table.Column<string>(maxLength: 10, nullable: true),
-                    Description = table.Column<string>(maxLength: 400, nullable: true),
-                    MimeType = table.Column<string>(maxLength: 200, nullable: true, defaultValue: "application/octet-stream"),
                     CreationDateTime = table.Column<DateTime>(nullable: false, defaultValueSql: "getdate()")
                 },
                 constraints: table =>
@@ -42,8 +40,8 @@ namespace FileShare.Migrations
 
             migrationBuilder.InsertData(
                 table: "PermittedExtension",
-                columns: new[] { "Id", "CreationDateTime", "Description", "Extension", "MimeType" },
-                values: new object[] { new Guid("b430f084-9f68-4d2a-b2a9-fc2c4c422a83"), new DateTime(2020, 9, 26, 16, 47, 11, 196, DateTimeKind.Local).AddTicks(5026), null, ".zip", "application/zip" });
+                columns: new[] { "Id", "CreationDateTime", "Extension" },
+                values: new object[] { new Guid("d4bd2f98-4177-4f10-b089-78f665c39140"), new DateTime(2020, 9, 28, 15, 54, 59, 442, DateTimeKind.Local).AddTicks(5122), ".zip" });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

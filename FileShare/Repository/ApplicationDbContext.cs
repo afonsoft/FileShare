@@ -37,7 +37,6 @@ namespace FileShare.Repository
                    Id = Guid.NewGuid(),
                    Extension = ".zip",
                    CreationDateTime = DateTime.Now,
-                   MimeType = "application/zip"
                }
             );
         }

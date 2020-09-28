@@ -16,9 +16,8 @@ using FileShare.Repository.Model;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Globalization;
 using System.Text;
-using Microsoft.EntityFrameworkCore;
-using System.Net.Mime;
 using FileShare.Net;
+using System.Linq;
 
 namespace FileShare.Controllers
 {
@@ -29,14 +28,8 @@ namespace FileShare.Controllers
         private readonly ILogger<StreamingController> _logger;
         private readonly string _targetFilePath;
         private const int BufferSize = 8192;
-        private const int kbps = 100 * 1024; //100kbps
-
-        #region PermittedExtensions
-        private readonly string[] _permittedExtensions =
-        {
-            ".txt", ".zip", ".mpg", ".mp4", ".mp3", ".pdf", ".doc", ".docx", ".aac", ".abw",".arc",".avi",".azw",".bin",".bz",".bz2",".csh"  ,".css"  ,".csv"  ,".doc"  ,".eot"  ,".epub" ,".gif"  ,".htm"  ,".html" ,".ico"  ,".ics"  ,".jar"  ,".jpeg" ,".jpg"  ,".js"   ,".json" ,".mid"  ,".midi" ,".mpeg" ,".mpkg" ,".odp"  ,".ods"  ,".odt"  ,".oga"  ,".ogv"  ,".ogx"  ,".otf"  ,".png"  ,".pdf"  ,".ppt"  ,".rar"  ,".rtf"  ,".sh"   ,".svg"  ,".swf"  ,".tar"  ,".tif"  ,".tiff" ,".ts"   ,".ttf"  ,".vsd"  ,".wav"  ,".weba" ,".webm" ,".webp" ,".woff" ,".woff2",".xhtml",".xls"  ,".xlsx" ,".xml"  ,".xul"  ,".zip"  ,".3gp"  ,".3g2"  ,".7z"
-        };
-        #endregion
+        private const int kbps = 500 * 1024; //500kbps
+        private readonly string[] _permittedExtensions;
 
         // Get the default form options so that we can use them to set the default 
         // limits for request body data.
@@ -48,6 +41,7 @@ namespace FileShare.Controllers
             _context = context;
             _fileSizeLimit = int.MaxValue;
             _targetFilePath = Path.Combine(env.WebRootPath, "FILES");
+            _permittedExtensions = context.PermittedExtension.Select(x => x.Extension).ToArray();
         }
 
         #region UploadFileStream
@@ -188,15 +182,13 @@ namespace FileShare.Controllers
         {
             if (System.IO.File.Exists(fileModel.Path))
             {
-                using (FileStream sourceStream = new FileStream(fileModel.Path, FileMode.Open, FileAccess.Read, System.IO.FileShare.Read, BufferSize, FileOptions.Asynchronous | FileOptions.SequentialScan))
-                {
-                    ThrottledStream destinationStream = new ThrottledStream(sourceStream, kbps);
-                    return new FileStreamResult(destinationStream, FindMimeHelpers.GetMimeFromFile(fileModel.Path))
-                    {
-                        FileDownloadName = fileModel.TrustedName,
-                        LastModified = fileModel.UploadDT
-                    };
-                }
+                FileStream sourceStream = new FileStream(fileModel.Path, FileMode.Open, FileAccess.Read, System.IO.FileShare.Read, BufferSize, FileOptions.Asynchronous | FileOptions.SequentialScan);
+                ThrottledStream destinationStreamStream = new ThrottledStream(sourceStream, kbps);
+                FileStreamResult fileStreamResult = new FileStreamResult(destinationStreamStream, FindMimeHelpers.GetMimeFromFile(fileModel.Path));
+                fileStreamResult.FileDownloadName = fileModel.TrustedName;
+                fileStreamResult.LastModified = fileModel.UploadDT;
+
+                return fileStreamResult;
             }
             else
             {

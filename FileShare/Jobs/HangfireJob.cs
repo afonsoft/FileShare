@@ -199,7 +199,7 @@ namespace FileShare.Jobs
 
                             ext = ext.Trim().ToLower();
 
-                           if (! _context.PermittedExtension.Any(x=> x.Extension == ext))
+                           if (! _context.PermittedExtension.Any(x=> x.Extension == ext) && !string.IsNullOrEmpty(ext))
                             {
                                await _context.PermittedExtension.AddAsync(new ExtensionPermittedModel()
                                 {

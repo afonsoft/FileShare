@@ -28,9 +28,9 @@ namespace FileShare.Jobs
         }
         public void Initialize()
         {
-            RecurringJob.AddOrUpdate<IHangfireJob>("Delete OLD Files", x => x.JobDeleteOldFiles(null), Cron.Hourly, TimeZoneInfo.Local);
-            RecurringJob.AddOrUpdate<IHangfireJob>("Delete Files Not Exist", x => x.JobDeleteFilesNotExist(null), Cron.Daily, TimeZoneInfo.Local);
-            RecurringJob.AddOrUpdate<IHangfireJob>("Import Permitted Extensions", x => x.JobImportPermittedExtensions(null), Cron.Daily, TimeZoneInfo.Local);
+            RecurringJob.AddOrUpdate<IHangfireJob>("DelOldFiles", x => x.JobDeleteOldFiles(null), Cron.Hourly, TimeZoneInfo.Local);
+            RecurringJob.AddOrUpdate<IHangfireJob>("DelFilesNotExist", x => x.JobDeleteFilesNotExist(null), Cron.Daily, TimeZoneInfo.Local);
+            RecurringJob.AddOrUpdate<IHangfireJob>("PermittedExtensions", x => x.JobImportPermittedExtensions(null), Cron.Daily, TimeZoneInfo.Local);
         }
 
         public async void JobDeleteFilesNotExist(PerformContext context)
@@ -55,14 +55,54 @@ namespace FileShare.Jobs
                                             .ToList();
 
                 var filesNotExistInDb = filesInDb.Where(x=>!filesInDrive.Contains(x)).ToList();
-                var filesNotExistInDrive = filesInDrive.Where(x => !filesInDb.Contains(x)).ToList(); 
+                var filesNotExistInDrive = filesInDrive.Where(x => !filesInDb.Contains(x)).ToList();
+
+                context.WriteLine($"Total de registros a deletear {filesNotExistInDb.Count}");
+                context.WriteLine($"Total de arquivos a deletar {filesNotExistInDrive.Count}");
+
+                foreach(var file in filesNotExistInDrive)
+                {
+                    try
+                    {
+                        var fileToDelete = Path.Combine(_targetFilePath, file);
+                        if (File.Exists(fileToDelete) && !fileToDelete.Contains("index.htm"))
+                        {
+                            File.Delete(fileToDelete);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        context.WriteLine($"Error Delete file {file} : {ex}");
+                    }
+                }
+
+                foreach (var file in filesNotExistInDb)
+                {
+                    try
+                    {
+                        var removeFile = await _context.Files
+                                            .Where(x => x.StorageName == file)
+                                            .FirstOrDefaultAsync();
+
+                        if(removeFile != null)
+                        {
+                            _context.Files.Remove(removeFile);
+                            await _context.SaveChangesAsync();
+                        }
+
+                    }
+                    catch (Exception ex)
+                    {
+                        context.WriteLine($"Error Remove file {file} from DB : {ex}");
+                    }
+                }
 
                 context.WriteLine("Job Finalizado");
             }
             catch (Exception ex)
             {
                 context.WriteLine($"Erro no Job : {ex}");
-                _logger.LogError(ex, $"Erro on Job JobDeleteFilesNotExist {context.BackgroundJob.Id}-{ex}");
+                _logger.LogError(ex, $"Error on Job JobDeleteFilesNotExist {context.BackgroundJob.Id}-{ex}");
             }
 
             isInProcessJobDeleteFilesNotExist = false;
@@ -104,7 +144,7 @@ namespace FileShare.Jobs
                         }
                         catch (Exception ex)
                         {
-                            context.WriteLine($"Erro Delete file {file.StorageName} : {ex}");
+                            context.WriteLine($"Error Delete file {file.StorageName} : {ex}");
                         }
                     }
                 }

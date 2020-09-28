@@ -18,6 +18,7 @@ using System.Globalization;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using System.Net.Mime;
+using FileShare.Net;
 
 namespace FileShare.Controllers
 {
@@ -27,6 +28,8 @@ namespace FileShare.Controllers
         private readonly long _fileSizeLimit;
         private readonly ILogger<StreamingController> _logger;
         private readonly string _targetFilePath;
+        private const int BufferSize = 8192;
+        private const int kbps = 100 * 1024; //100kbps
 
         #region PermittedExtensions
         private readonly string[] _permittedExtensions =
@@ -181,19 +184,24 @@ namespace FileShare.Controllers
         #region DownloadFileStream
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public async Task<IActionResult> DownloadFileStream(Models.FileModel fileModel)
+        public IActionResult DownloadFileStream(Models.FileModel fileModel)
         {
             if (System.IO.File.Exists(fileModel.Path))
             {
-                var targetStream = new MemoryStream(await System.IO.File.ReadAllBytesAsync(fileModel.Path));
-                var fileStream = new FileStreamResult(targetStream, FindMimeHelpers.GetMimeFromFile(fileModel.Path));
-                fileStream.FileDownloadName = fileModel.TrustedName;
-                return fileStream;
+                using (FileStream sourceStream = new FileStream(fileModel.Path, FileMode.Open, FileAccess.Read, System.IO.FileShare.Read, BufferSize, FileOptions.Asynchronous | FileOptions.SequentialScan))
+                {
+                    ThrottledStream destinationStream = new ThrottledStream(sourceStream, kbps);
+                    return new FileStreamResult(destinationStream, FindMimeHelpers.GetMimeFromFile(fileModel.Path))
+                    {
+                        FileDownloadName = fileModel.TrustedName,
+                        LastModified = fileModel.UploadDT
+                    };
+                }
             }
             else
             {
                 ModelState.AddModelError("Error", $"The request couldn't be processed (Error 0).");
-                return BadRequest(ModelState);
+                return NotFound(ModelState);
             }
         }
         #endregion

@@ -40,7 +40,7 @@ namespace FileShare.Utilities
                         var bytes = memoryStream.ToArray();
                         if (!IsValidFileExtensionAndSignature(bytes, permittedExtensions))
                         {
-                            modelState.AddModelError("Error", $"The file type isn't permitted or the file's signature doesn't match the file's extension. {FindMimeHelpers.GetMimeFromByte(bytes)}");
+                            modelState.AddModelError("Error", $"The file type isn't permitted or the file's signature doesn't match the file's extension. {FindMimeHelpers.GetMimeFromByte(bytes)} - {FindMimeHelpers.GetExtensionsFromByte(bytes)[0]}");
                         }
 
                         return bytes;

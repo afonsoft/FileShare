@@ -1,0 +1,86 @@
+﻿@{
+    ViewData["Title"] = "List";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div  class="col">
+            <div align="center" class="center">
+                <!-- HorizontalResponsivo -->
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-2122647083447667"
+                     data-ad-slot="2536456475"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+            </div>
+        </div>
+    </div>
+
+     <div class="row">
+        <div  class="col">
+            <form asp-controller="List" asp-action="download" method="post" id="FormEdit">
+            <table id="grid-data-files" class="table table-condensed table-hover table-striped" style="font-size:8pt;" data-ajax="true" data-url="/List/Files">
+                <thead>
+                    <tr>
+                        <th data-column-id="hash" data-visible="false" data-identifier="true">hash</th>
+                        <th data-column-id="trustedName">Name</th>
+                        <th data-column-id="type">Type</th>
+                        <th data-column-id="size" data-converter="size" data-width="10%">Size</th>
+                        <th data-column-id="uploadDT" data-converter="datetime" data-width="10%" data-header-css-class="HideColInMobile" data-css-class="HideColInMobile">CreationDate</th>
+                        <th data-formatter="actions" data-width="10%" data-sortable="false">Download</th>
+                    </tr>
+                </thead>
+            </table>
+        </form>
+        </div> 
+    </div>
+
+     <div class="row">
+        <div  class="col">
+            <div align="center" class="center">
+                <!-- HorizontalResponsivo -->
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-2122647083447667"
+                     data-ad-slot="2536456475"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var grid = $("#grid-data-files").bootgrid(
+                {
+                    ajax: true,
+                    url: '/List/Files',
+                    searchSettings: {
+                        delay: 100,
+                        characters: 3
+                    },
+
+                    formatters: {
+                        "actions": function (column, row) {
+                            return "<div class='btn-group btn-group-sm' role='group'>" +
+                                "<a href='#' alt='download' class='btn btn-info btn-sm' data-command='download' data-row-id = '" + row.Id + "'>" +
+                                "<span class='glyphicon glyphicon-list'></span>" + "</a></div>";
+                        }
+                    },
+                    converters: {
+                         size: {
+                            from: function (value) { return value; },
+                            to: function (value) { return getFileSizeString(value); }
+                        },
+                        datetime: {  
+                            from: function (value) { return moment(value); },
+                            to: function (value) { return moment(FormatJsonDateToJavaScriptDate(value)).format("DD/MM/YYYY"); }
+                        }
+                    }
+                });
+        });
+    </script>
+    }

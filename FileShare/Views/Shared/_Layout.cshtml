@@ -49,6 +49,8 @@
     
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/lib/jquery-bootgrid/jquery.bootgrid.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/css/glyphicons.css" />
     <link rel="stylesheet" href="~/css/site.css" />
 
     <!--[if lt IE 9]>
@@ -80,6 +82,9 @@
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Upload</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="List" asp-action="Index">List</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
@@ -122,8 +127,11 @@
         <script src="~/lib/jquery-countdown360/jquery.countdown360.min.js"></script>
     </environment>
 
+    <script src="~/lib/jquery-bootgrid/jquery.bootgrid.min.js"></script>
+    <script src="~/lib/jquery-bootgrid/jquery.bootgrid.fa.min.js"></script>
+    <script src="~/lib/moment/moment.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-
+    
     @RenderSection("Scripts", required: false)
 
     <script>

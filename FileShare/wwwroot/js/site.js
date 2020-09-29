@@ -23,6 +23,11 @@ function getFileSizeString(fileSizeInBytes) {
     return Math.max(fileSizeInBytes, 0.1).toFixed(1) + byteUnits[i];
 };
 
+function FormatJsonDateToJavaScriptDate(value) {
+    var dt = new Date(value);
+    return (dt.getMonth() + 1) + "/" + dt.getDate() + "/" + dt.getFullYear();
+}
+
 function inputFileTemplate() {
     $(".custom-file-input").on("change", function () {
         var fileName = $(this).val().split("\\").pop();

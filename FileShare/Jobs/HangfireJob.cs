@@ -182,16 +182,20 @@ namespace FileShare.Jobs
                 int totalSucess = 0;
                 int totalSkip = 0;
                 int totalError = 0;
+                int totalGeral = 0;
 
                 var fileExtensions = Path.Combine(_targetFilePath, "Extensions.txt");
                 if (File.Exists(fileExtensions))
                 {
                     string[] lines = File.ReadAllLines(fileExtensions);
 
+                  var progressBar = context.WriteProgressBar("Processo", 0);
+
                     foreach (string line in lines)
                     {
                         try
                         {
+                            totalGeral++;
                             string ext = line.Split(';')[0];
 
                             if (!ext.StartsWith("."))
@@ -221,6 +225,8 @@ namespace FileShare.Jobs
                             context.WriteLine($"Erro na linha {line} : {ex}");
                             _logger.LogError(ex, $"Erro on Job JobImportPermittedExtensions {context.BackgroundJob.Id}-{line}-{ex}");
                         }
+
+                        progressBar.SetValue((totalGeral / lines.Count()) * 100);
                     }
 
                     context.WriteLine($"Reultado: Sucessos ({totalSucess}) Ignorados ({totalSkip}) Falhas ({totalError})");

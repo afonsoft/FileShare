@@ -29,9 +29,9 @@ namespace FileShare.Jobs
         }
         public void Initialize()
         {
-            RecurringJob.AddOrUpdate<IHangfireJob>("DelOldFiles", x => x.JobDeleteOldFiles(null), Cron.Hourly, TimeZoneInfo.Local);
-            RecurringJob.AddOrUpdate<IHangfireJob>("DelFilesNotExist", x => x.JobDeleteFilesNotExist(null), Cron.Daily, TimeZoneInfo.Local);
-            RecurringJob.AddOrUpdate<IHangfireJob>("PermittedExtensions", x => x.JobImportPermittedExtensions(null), Cron.Daily, TimeZoneInfo.Local);
+            RecurringJob.AddOrUpdate<IHangfireJob>("DelOldFiles", x => x.JobDeleteOldFiles(null), Cron.Hourly(), TimeZoneInfo.Local);
+            RecurringJob.AddOrUpdate<IHangfireJob>("DelFilesNotExist", x => x.JobDeleteFilesNotExist(null), Cron.Hourly(), TimeZoneInfo.Local);
+            RecurringJob.AddOrUpdate<IHangfireJob>("PermittedExtensions", x => x.JobImportPermittedExtensions(null), Cron.Hourly(), TimeZoneInfo.Local);
         }
 
         public async void JobDeleteFilesNotExist(PerformContext context)

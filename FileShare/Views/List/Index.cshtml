@@ -19,20 +19,21 @@
 
      <div class="row">
         <div  class="col">
-            <form asp-controller="List" asp-action="download" method="post" id="FormEdit">
-            <table id="grid-data-files" class="table table-condensed table-hover table-striped" style="font-size:8pt;" data-ajax="true" data-url="/List/Files">
-                <thead>
-                    <tr>
-                        <th data-column-id="hash" data-visible="false" data-identifier="true">hash</th>
-                        <th data-column-id="trustedName">Name</th>
-                        <th data-column-id="type">Type</th>
-                        <th data-column-id="size" data-converter="size" data-width="10%">Size</th>
-                        <th data-column-id="uploadDT" data-converter="datetime" data-width="10%" data-header-css-class="HideColInMobile" data-css-class="HideColInMobile">CreationDate</th>
-                        <th data-formatter="actions" data-width="10%" data-sortable="false">Download</th>
-                    </tr>
-                </thead>
-            </table>
-        </form>
+            <form asp-controller="List" asp-action="index" method="post" id="FormDownload">
+                <input type="hidden" name="hash" id="hash" />
+                <table id="grid-data-files" class="table table-condensed table-hover table-striped" style="font-size:8pt;" data-ajax="true" data-url="/List/Files">
+                    <thead>
+                        <tr>
+                            <th data-column-id="hash" data-visible="false" data-identifier="true">hash</th>
+                            <th data-column-id="trustedName">Name</th>
+                            <th data-column-id="type">Type</th>
+                            <th data-column-id="size" data-converter="size" data-width="10%">Size</th>
+                            <th data-column-id="uploadDT" data-converter="datetime" data-width="10%" data-header-css-class="HideColInMobile" data-css-class="HideColInMobile">CreationDate</th>
+                            <th data-formatter="actions" data-width="10%" data-sortable="false">Download</th>
+                        </tr>
+                    </thead>
+                </table>
+            </form>
         </div> 
     </div>
 
@@ -66,7 +67,7 @@
                     formatters: {
                         "actions": function (column, row) {
                             return "<div class='btn-group btn-group-sm' role='group'>" +
-                                "<a href='#' alt='download' class='btn btn-info btn-sm' data-command='download' data-row-id = '" + row.Id + "'>" +
+                                "<a href='#' alt='download' class='btn btn-info btn-sm' data-command='download' data-row-id = '" + row.hash + "'>" +
                                 "<span class='glyphicon glyphicon-list'></span>" + "</a></div>";
                         }
                     },
@@ -81,6 +82,17 @@
                         }
                     }
                 });
+
+                grid.on("loaded.rs.jquery.bootgrid", function () {
+                grid.find("a.btn").each(function (index, element) {
+                    var buttonAction = $(element);
+                    var command = buttonAction.data("command");
+                    var id = buttonAction.data("row-id");
+                    buttonAction.on("click", function () {
+                       window.location.href = '/download/' + id;
+                    });
+                });
+            });
         });
     </script>
     }

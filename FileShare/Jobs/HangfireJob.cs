@@ -55,10 +55,10 @@ namespace FileShare.Jobs
                                             .Select(x => x.Split("\\").Last())
                                             .ToList();
 
-                var filesNotExistInDb = filesInDb.Where(x=>!filesInDrive.Contains(x)).ToList();
+                var filesNotExistInDb = filesInDb.Where(x => !filesInDrive.Contains(x)).ToList();
                 var filesNotExistInDrive = filesInDrive.Where(x => !filesInDb.Contains(x)).ToList();
 
-                context.WriteLine($"Total de registros a deletear {filesNotExistInDb.Count}");
+                context.WriteLine($"Total de registros a deletar {filesNotExistInDb.Count}");
                 context.WriteLine($"Total de arquivos a deletar {filesNotExistInDrive.Count}");
 
                 foreach(var file in filesNotExistInDrive)
@@ -68,7 +68,8 @@ namespace FileShare.Jobs
                         var fileToDelete = Path.Combine(_targetFilePath, file);
                         if (File.Exists(fileToDelete) && !fileToDelete.Contains("index.htm") && !fileToDelete.Contains("Extensions.txt"))
                         {
-                            File.Delete(fileToDelete);
+                            context.WriteLine($"Delete file {fileToDelete}");
+                            //File.Delete(fileToDelete);
                         }
                     }
                     catch (Exception ex)
@@ -87,8 +88,9 @@ namespace FileShare.Jobs
 
                         if(removeFile != null)
                         {
-                            _context.Files.Remove(removeFile);
-                            await _context.SaveChangesAsync();
+                            context.WriteLine($"Remove file from DB {file}");
+                            //_context.Files.Remove(removeFile);
+                            //await _context.SaveChangesAsync();
                         }
 
                     }

@@ -210,9 +210,21 @@ namespace FileShare.Controllers
                 IP = remoteIpAddress,
                 Name = fileNameForDisplay,
                 StorageName = fileNameForFileStorage,
-                Type = FindMimeHelpers.GetMimeFromFile(fileNameFinaliy),
+                Type = "application/octet-stream",
                 Hash = CreateHashFile(fileNameForDisplay, fileNameForFileStorage, remoteIpAddress, contentType)
             };
+
+            try
+            {
+                fileUploaded.Type = FindMimeHelpers.GetMimeFromFile(fileNameFinaliy);
+            }
+            catch (Exception)
+            {
+                fileUploaded.Type = FindMimeHelpers.GetMimeFromExtensions(Path.GetExtension(fileNameForDisplay).ToLowerInvariant());
+            }
+
+            if(string.IsNullOrEmpty(fileUploaded.Type))
+                fileUploaded.Type = "application/octet-stream";
 
             //Salvar no Banco de Dados
             await _context.Files.AddAsync(fileUploaded);

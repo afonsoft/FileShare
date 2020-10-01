@@ -31,6 +31,26 @@ namespace FileShare.Utilities
             return new MimeTypes().GetMimeType(ConverteStreamToByteArray(stream)).Extensions;
         }
 
+        public static string GetMimeFromExtensions(string ext)
+        {
+            string typeExt = "application/octet-stream";
+            switch (ext)
+            {
+                case ".pdf":
+                    typeExt = "application/pdf";
+                    break;
+                case ".txt":
+                    typeExt = "text/plain";
+                    break;
+                case ".zip":
+                    typeExt = "application/zip";
+                    break;
+                case ".xml":
+                    typeExt = "application/xml";
+                    break;
+            }
+            return typeExt;
+        }
 
         private static byte[] ConverteStreamToByteArray(Stream stream)
         {

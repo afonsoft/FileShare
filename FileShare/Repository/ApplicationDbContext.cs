@@ -25,6 +25,7 @@ namespace FileShare.Repository
         {
             modelBuilder.ApplyConfiguration(new FilesMap());
             modelBuilder.ApplyConfiguration(new ExtensionPermittedMap());
+            modelBuilder.ApplyConfiguration(new FileUserMap());
 
             Seed(modelBuilder);
             base.OnModelCreating(modelBuilder);
@@ -33,11 +34,12 @@ namespace FileShare.Repository
         private void Seed(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ExtensionPermittedModel>()
-       .HasData(
+            .HasData(
                new ExtensionPermittedModel
                {
                    Id = Guid.NewGuid(),
                    Extension = ".zip",
+                   Description = "application/zip",
                    CreationDateTime = DateTime.Now,
                }
             );
@@ -46,6 +48,7 @@ namespace FileShare.Repository
 
         public DbSet<FileModel> Files { get; set; }
         public DbSet<ExtensionPermittedModel> PermittedExtension { get; set; }
+        public DbSet<FileUserModel> FilesUsers { get; set; }
     }
 
     public class ApplicationIdentityUser : IdentityUser<Guid>

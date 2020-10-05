@@ -219,9 +219,6 @@ namespace FileShare
 
             app.UseHangfireDashboard("/hangfire", new DashboardOptions
             {
-#if RELEASE
-                IsReadOnlyFunc = (DashboardContext context) => true,
-#endif
                 DisplayStorageConnectionString = false,
                 Authorization = new[] { new AllowAllDashboardAuthorizationFilter() }
             });

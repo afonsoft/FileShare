@@ -2,7 +2,9 @@
 @using FileShare.Repository;
 @inject SignInManager<ApplicationIdentityUser> SignInManager
 @inject UserManager<ApplicationIdentityUser> UserManager
-
+@{
+     var user = await UserManager.GetUserAsync(User);
+}
 <!DOCTYPE html>
 <!--[if lt IE 7 ]><html lang="pt" class="no-touch no-js ie6"><![endif]-->
 <!--[if IE 7 ]><html lang="pt" class="no-touch no-js ie7"><![endif]-->
@@ -109,10 +111,21 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
-                        @if(SignInManager.IsSignedIn(User)){
+                        @if(SignInManager.IsSignedIn(User))
+                        {
+                            @if(UserManager.IsInRoleAsync(user, "Admin").Result)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" href="Hangfire">Hangfire</a>
+                                </li>
+                            }
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Logout">Logout</a>
+                            </li>
+                        }else{
                              <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Logout">Logout</a>
-                        </li>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Index">Login</a>
+                            </li>
                         }
                     </ul>
                 </div>

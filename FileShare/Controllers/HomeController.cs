@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using FileShare.Models;
 using FileShare.Repository;
 using FileShare.Filters;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FileShare.Controllers
 {

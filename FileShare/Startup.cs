@@ -1,27 +1,29 @@
-using System;
-using System.IO.Compression;
-using Afonsoft.Logger;
-using FileShare.Extensions;
-using FileShare.Filters;
-using FileShare.Interfaces;
-using FileShare.Jobs;
-using FileShare.Repository;
-using Hangfire;
-using Hangfire.Console;
-using Hangfire.Dashboard;
-using Hangfire.SQLite;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.EntityFrameworkCore;
+using Afonsoft.Logger;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http.Features;
+using Hangfire;
+using Hangfire.Console;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using FileShare.Extensions;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using FileShare.Interfaces;
+using Microsoft.AspNetCore.DataProtection;
+using FileShare.Repository;
+using FileShare.Jobs;
+using Microsoft.AspNetCore.ResponseCompression;
+using System.IO.Compression;
+using FileShare.Filters;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace FileShare
 {
@@ -49,7 +51,7 @@ namespace FileShare
             services.Configure<CookiePolicyOptions>(options =>
             {
                 options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
+                options.MinimumSameSitePolicy = SameSiteMode.Strict;
             });
 
             services.Configure<IISOptions>(o =>
@@ -60,7 +62,7 @@ namespace FileShare
             services.AddAfonsoftLogging();
             services.AddMemoryCache();
             services.AddDistributedMemoryCache();
-            services.AddEntityFrameworkSqlite();
+            services.AddEntityFrameworkSqlServer();
             services.AddAntiforgery();
             services.AddHttpClient();
 
@@ -77,14 +79,73 @@ namespace FileShare
             services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseLazyLoadingProxies(true);
-                options.UseSqlite(connectionString);
+                options.UseSqlServer(connectionString);
             });
+
+            services.AddIdentity<ApplicationIdentityUser, ApplicationIdentityRole>()
+                    .AddEntityFrameworkStores<ApplicationDbContext>()
+                    .AddDefaultTokenProviders();
 
             services.AddHangfire(x =>
             {
-                x.UseSQLiteStorage(connectionString);
+                x.UseSqlServerStorage(connectionString);
                 x.UseRecommendedSerializerSettings();
                 x.UseConsole();
+            });
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                // Cookie settings
+                options.Cookie.IsEssential = true;
+                options.ExpireTimeSpan = TimeSpan.FromHours(24);
+                options.LoginPath = new PathString("/Auth/Login");
+                options.AccessDeniedPath = new PathString("/Auth/Denied");
+                options.SlidingExpiration = true;
+            });
+
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
+                    options =>
+                    {
+                        options.LoginPath = new PathString("/Auth/Login");
+                        options.AccessDeniedPath = new PathString("/Auth/Denied");
+                        options.SlidingExpiration = true;
+                        options.Cookie.IsEssential = true;
+                        options.ExpireTimeSpan = TimeSpan.FromHours(24);
+                    })
+                 .AddJwtBearer(options =>
+                 {
+                     options.Audience = "https://files.afonsoft.com.br/";
+                     options.Authority = "https://files.afonsoft.com.br/";
+                     options.RequireHttpsMetadata = false;
+                     options.SaveToken = true;
+                     options.TokenValidationParameters = new TokenValidationParameters
+                     {
+                         ValidateIssuerSigningKey = true,
+                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("Senha#2021Afonsoft")),
+                         ValidateIssuer = true,
+                         ValidateAudience = true
+                     };
+                 });
+
+            services.Configure<IdentityOptions>(options =>
+            {
+                // Password settings.
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequiredLength = 6;
+                options.Password.RequiredUniqueChars = 1;
+
+                // Lockout settings.
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                options.Lockout.MaxFailedAccessAttempts = 10;
+                options.Lockout.AllowedForNewUsers = true;
+
+                // User settings.
+                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+#";
+                options.User.RequireUniqueEmail = true;
             });
 
             services.AddCors(options =>

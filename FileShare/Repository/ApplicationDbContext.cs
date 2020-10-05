@@ -2,10 +2,12 @@
 using FileShare.Repository.Mapping;
 using FileShare.Repository.Model;
 using System;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace FileShare.Repository
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationIdentityUser, ApplicationIdentityRole, Guid>
     { 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
@@ -44,5 +46,15 @@ namespace FileShare.Repository
 
         public DbSet<FileModel> Files { get; set; }
         public DbSet<ExtensionPermittedModel> PermittedExtension { get; set; }
+    }
+
+    public class ApplicationIdentityUser : IdentityUser<Guid>
+    {
+
+    }
+
+    public class ApplicationIdentityRole : IdentityRole<Guid>
+    {
+
     }
 }

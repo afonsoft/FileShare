@@ -1,0 +1,56 @@
+﻿@model FileShare.Models.LoginModel
+
+@{
+    ViewData["Title"] = "Login";
+}
+<div class="limiter">
+    <div class="container-login100">
+        <div class="wrap-login100">
+            <div class="login100-form-title" style="background-image: url(~/images/bg-01.jpg);">
+                <span class="login100-form-title-1">
+                    Sign In
+                </span>
+            </div>
+
+            <form class="login100-form validate-form" asp-action="Login" asp-route-returnurl="@Model.ReturnUrl">
+                <div asp-validation-summary="ModelOnly"
+                     class="validation-summary alert alert-danger alert-dismissable" style="width:100%">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">
+                            &times;
+                        </span>
+                    </button>
+                </div>
+                <div class="wrap-input100 validate-input m-b-26" data-validate="E-mail obrigatório">
+                    <span class="label-input100" asp-for="Username">E-Mail</span>
+                    <input class="input100" asp-for="Username" placeholder="E-Mail">
+                    <span class="focus-input100"></span>
+                </div>
+
+                <div class="wrap-input100 validate-input m-b-18" data-validate="Senha Obrigatório">
+                    <span class="label-input100" asp-for="Password">Senha</span>
+                    <input class="input100" asp-for="Password" placeholder="Senha">
+                    <span class="focus-input100"></span>
+                </div>
+
+                <div class="flex-sb-m w-full p-b-30">
+                    <div class="checkbox contact100-form-checkbox">
+                        <input asp-for="RememberMe" class="input-checkbox100" />
+                        <label asp-for="RememberMe" class="label-checkbox100"></label>
+                    </div>
+
+                    <div>
+                        <a href="#" class="txt1">
+                            Esqueceu a Senha?
+                        </a>
+                    </div>
+                </div>
+
+                <div class="container-login100-form-btn">
+                    <input class="login100-form-btn" type="submit" title="Entrar" value="Entrar" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+

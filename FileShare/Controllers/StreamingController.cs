@@ -18,6 +18,7 @@ using System.Globalization;
 using System.Text;
 using FileShare.Net;
 using System.Linq;
+using Microsoft.AspNetCore.Identity;
 
 namespace FileShare.Controllers
 {
@@ -30,15 +31,17 @@ namespace FileShare.Controllers
         private const int BufferSize = 8192;
         private const int kbps = 500 * 1024; //500kbps
         private readonly string[] _permittedExtensions;
+        private readonly SignInManager<ApplicationIdentityUser> _signInManager;
 
         // Get the default form options so that we can use them to set the default 
         // limits for request body data.
         private static readonly FormOptions _defaultFormOptions = new FormOptions();
 
-        public StreamingController(ILogger<StreamingController> logger, ApplicationDbContext context, IWebHostEnvironment env)
+        public StreamingController(ILogger<StreamingController> logger, ApplicationDbContext context, IWebHostEnvironment env, SignInManager<ApplicationIdentityUser> signInManager)
         {
             _logger = logger;
             _context = context;
+            _signInManager = signInManager;
             _fileSizeLimit = int.MaxValue;
             _targetFilePath = Path.Combine(env.WebRootPath, "FILES");
             _permittedExtensions = context.PermittedExtension.Select(x => x.Extension).ToArray();

@@ -34,9 +34,23 @@ function inputFileTemplate() {
         $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
     });
 }
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
-function googleAdsense() {
-    $(".adsbygoogle").each(function () { (adsbygoogle = window.adsbygoogle || []).push({}); });
+function googleAdsense(count) {
+    try {
+        $(".adsbygoogle").each(function () {
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        });
+    } catch{
+        if (count == 3)
+            return;
+        count++;
+        console.log("googleAdsense count " + count);
+        sleep(1000);
+        googleAdsense(count);
+    }
 }
 
 function showAlertDanger(message) {
@@ -47,7 +61,7 @@ function showAlertDanger(message) {
 $(document).ready(function () {
     inputFileTemplate();
     countDown();
-    googleAdsense();
+    googleAdsense(0);
 });
 
 function countDown() {

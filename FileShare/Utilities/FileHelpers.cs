@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.Net.Http.Headers;
 using System.Threading.Tasks;
+using FileShare.Memory;
 
 namespace FileShare.Utilities
 {
@@ -17,7 +18,7 @@ namespace FileShare.Utilities
         {
             try
             {
-                using (var memoryStream = new MemoryStream())
+                using (var memoryStream = new HugeMemoryStream())
                 {
                     await section.Body.CopyToAsync(memoryStream);
 

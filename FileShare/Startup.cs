@@ -77,7 +77,7 @@ namespace FileShare
 
             services.AddSingleton(typeof(IRepository<,>), typeof(Repository<,>));
 
-            services.AddDbContext<ApplicationDbContext>(options =>
+            services.AddDbContextPool<ApplicationDbContext>(options =>
             {
                 options.UseLazyLoadingProxies(true);
                 options.UseSqlServer(connectionString);

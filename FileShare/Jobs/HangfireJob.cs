@@ -221,7 +221,7 @@ namespace FileShare.Jobs
                                 }
                                 else
                                 {
-                                    if (l.Length >= 1 && !string.IsNullOrEmpty(l[1]))
+                                    if (l.Length > 1 && !string.IsNullOrEmpty(l[1]))
                                     {
                                         model.Description = l[1];
                                         model.Extension = ext;

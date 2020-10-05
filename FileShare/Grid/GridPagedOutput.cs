@@ -5,11 +5,14 @@ namespace FileShare.Grid
 {
     public class GridPagedOutput<T> where T : class, new()
     {
+        public GridPagedOutput()
+        {
+            this.Rows = new List<T>();
+        }
+
         public GridPagedOutput(IEnumerable<T> value)
         {
-            if (value == null)
-                value = new List<T>();
-            this.Rows = value;
+            this.Rows = value ?? new List<T>();
         }
 
         [JsonProperty("current")]

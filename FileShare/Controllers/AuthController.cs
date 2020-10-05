@@ -116,7 +116,7 @@ namespace FileShare.Controllers
                 else
                 {
                     _logger.LogInformation($"Usuário {u.Username} Usuário ou Senha Inválidos.");
-                    ModelState.AddModelError("", "Usuário ou Senha Inválidos!");
+                    ModelState.AddModelError("", "User or Password is invalid!");
                 }
             }
             return View(u);

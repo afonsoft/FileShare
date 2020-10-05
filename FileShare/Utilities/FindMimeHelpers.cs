@@ -1,10 +1,15 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using Winista.Mime;
 
 namespace FileShare.Utilities
 {
     public static class FindMimeHelpers
     {
+
+        public static Dictionary<string, string> ListOfMimeType { get; set; }
+
         public static string GetMimeFromFile(string filePath)
         {
             return new MimeTypes().GetMimeTypeFromFile(filePath).Name;
@@ -34,20 +39,16 @@ namespace FileShare.Utilities
         public static string GetMimeFromExtensions(string ext)
         {
             string typeExt = "application/octet-stream";
-            switch (ext)
+
+            foreach (KeyValuePair<string, string> kvp in ListOfMimeType)
             {
-                case ".pdf":
-                    typeExt = "application/pdf";
+                if (kvp.Key == ext)
+                {
+                    typeExt = kvp.Value;
+                    if (string.IsNullOrEmpty(typeExt))
+                        typeExt = "application/octet-stream";
                     break;
-                case ".txt":
-                    typeExt = "text/plain";
-                    break;
-                case ".zip":
-                    typeExt = "application/zip";
-                    break;
-                case ".xml":
-                    typeExt = "application/xml";
-                    break;
+                }
             }
             return typeExt;
         }

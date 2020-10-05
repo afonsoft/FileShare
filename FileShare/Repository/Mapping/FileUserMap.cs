@@ -1,10 +1,6 @@
 ﻿using FileShare.Repository.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace FileShare.Repository.Mapping
 {
@@ -19,6 +15,9 @@ namespace FileShare.Repository.Mapping
             builder.Property(c => c.FileId).HasColumnName("FileId");
             builder.Property(c => c.UserId).HasColumnName("UserId");
             builder.Property(c => c.CreationDateTime).HasColumnName("CreationDateTime").HasDefaultValueSql("getdate()");
+
+            builder.HasOne(c => c.File).WithMany().HasForeignKey("FileId").OnDelete(DeleteBehavior.Cascade);
+            builder.HasOne(c => c.User).WithMany().HasForeignKey("UserId").OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

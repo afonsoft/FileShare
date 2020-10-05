@@ -4,14 +4,16 @@ using FileShare.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FileShare.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201005122843_FilesUsers")]
+    partial class FilesUsers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -143,8 +145,8 @@ namespace FileShare.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("f3bffe60-636d-4855-b93b-b647d23632fa"),
-                            CreationDateTime = new DateTime(2020, 10, 5, 9, 31, 9, 850, DateTimeKind.Local).AddTicks(4874),
+                            Id = new Guid("d65aaa14-ee02-47c9-b83b-2c62a1574715"),
+                            CreationDateTime = new DateTime(2020, 10, 5, 9, 28, 40, 18, DateTimeKind.Local).AddTicks(2975),
                             Description = "application/zip",
                             Extension = ".zip"
                         });

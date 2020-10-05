@@ -29,8 +29,8 @@ namespace FileShare.Jobs
         }
         public void Initialize()
         {
-            RecurringJob.AddOrUpdate<IHangfireJob>("DelOldFiles", x => x.JobDeleteOldFiles(null), Cron.Hourly(), TimeZoneInfo.Local);
-            RecurringJob.AddOrUpdate<IHangfireJob>("DelFilesNotExist", x => x.JobDeleteFilesNotExist(null), Cron.Hourly(), TimeZoneInfo.Local);
+            RecurringJob.AddOrUpdate<IHangfireJob>("DelOldFiles", x => x.JobDeleteOldFiles(null), Cron.Daily(), TimeZoneInfo.Local);
+            RecurringJob.AddOrUpdate<IHangfireJob>("DelFilesNotExist", x => x.JobDeleteFilesNotExist(null), Cron.Daily(), TimeZoneInfo.Local);
             RecurringJob.AddOrUpdate<IHangfireJob>("PermittedExtensions", x => x.JobImportPermittedExtensions(null), Cron.Hourly(), TimeZoneInfo.Local);
         }
 
@@ -69,7 +69,7 @@ namespace FileShare.Jobs
                         if (File.Exists(fileToDelete) && !fileToDelete.Contains("index.htm") && !fileToDelete.Contains("Extensions.txt"))
                         {
                             context.WriteLine($"Delete file {fileToDelete}");
-                            //File.Delete(fileToDelete);
+                            File.Delete(fileToDelete);
                         }
                     }
                     catch (Exception ex)
@@ -89,8 +89,8 @@ namespace FileShare.Jobs
                         if(removeFile != null)
                         {
                             context.WriteLine($"Remove file from DB {file}");
-                            //_context.Files.Remove(removeFile);
-                            //await _context.SaveChangesAsync();
+                            _context.Files.Remove(removeFile);
+                            await _context.SaveChangesAsync();
                         }
 
                     }
@@ -198,21 +198,37 @@ namespace FileShare.Jobs
                         try
                         {
                             totalGeral++;
-                            string ext = line.Split(';')[0];
-
+                            string[] l = line.Split(';');
+                            string ext = l[0];
                             if (!ext.StartsWith("."))
                                 ext = "." + ext;
 
                             ext = ext.Trim().ToLower();
 
-                           if (! _context.PermittedExtension.Any(x=> x.Extension == ext) && !string.IsNullOrEmpty(ext))
+                            if (!string.IsNullOrEmpty(ext))
                             {
-                               await _context.PermittedExtension.AddAsync(new ExtensionPermittedModel()
+                                var model = await _context.PermittedExtension.FirstOrDefaultAsync(x => x.Extension == ext);
+
+                                if (model == null)
                                 {
-                                    CreationDateTime = DateTime.Now,
-                                    Id = Guid.NewGuid(),
-                                    Extension = ext
-                                });
+                                    await _context.PermittedExtension.AddAsync(new ExtensionPermittedModel()
+                                    {
+                                        CreationDateTime = DateTime.Now,
+                                        Id = Guid.NewGuid(),
+                                        Extension = ext
+                                    });
+
+                                }
+                                else
+                                {
+                                    if (l.Length >= 1 && !string.IsNullOrEmpty(l[1]))
+                                    {
+                                        model.Description = l[1];
+                                        model.Extension = ext;
+                                        _context.PermittedExtension.Update(model);
+                                    }
+                                }
+
                                 await _context.SaveChangesAsync();
                                 totalSucess++;
                             }

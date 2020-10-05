@@ -226,7 +226,15 @@ namespace FileShare.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Erro para recuperar o MineType : " + ex.Message);
-                //fileUploaded.Type = FindMimeHelpers.GetMimeFromExtensions(Path.GetExtension(fileNameForDisplay).ToLowerInvariant());
+
+                if (FindMimeHelpers.ListOfMimeType == null || FindMimeHelpers.ListOfMimeType.Count <= 0)
+                {
+                    FindMimeHelpers.ListOfMimeType = _context.PermittedExtension
+                                                        .Select(x => new { x.Extension, x.Description })
+                                                        .ToDictionary(x => x.Extension, x => x.Description);
+                }
+
+                fileUploaded.Type = FindMimeHelpers.GetMimeFromExtensions(Path.GetExtension(fileNameForDisplay).ToLowerInvariant());
             }
 
             if(string.IsNullOrEmpty(fileUploaded.Type))

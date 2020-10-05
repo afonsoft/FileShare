@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,16 +18,10 @@ namespace FileShare.Controllers
     public class AuthController : Controller
     {
         private readonly ILogger<AuthController> _logger;
-        
+
         private readonly UserManager<ApplicationIdentityUser> _userManager;
         private readonly SignInManager<ApplicationIdentityUser> _signInManager;
-        
-        /// <summary>
-        /// AuthController
-        /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="signInManager"></param>
-        /// <param name="userManager"></param>
+
         public AuthController(ILogger<AuthController> logger, SignInManager<ApplicationIdentityUser> signInManager, UserManager<ApplicationIdentityUser> userManager)
         {
             _logger = logger;
@@ -37,31 +29,18 @@ namespace FileShare.Controllers
             _userManager = userManager;
         }
 
-        /// <summary>
-        /// Denied
-        /// </summary>
-        /// <returns></returns>
         [AllowAnonymous]
         public ActionResult Denied()
         {
             return View();
         }
 
-        /// <summary>
-        /// Index
-        /// </summary>
-        /// <returns></returns>
         [AllowAnonymous]
         public ActionResult Index()
         {
             return RedirectToAction("Login", "Auth");
         }
 
-        /// <summary>
-        /// Login
-        /// </summary>
-        /// <param name="returnUrl"></param>
-        /// <returns></returns>
         [AllowAnonymous]
         public ActionResult Login(string returnUrl = "")
         {
@@ -69,11 +48,6 @@ namespace FileShare.Controllers
             return View(model);
         }
 
-        /// <summary>
-        /// Login
-        /// </summary>
-        /// <param name="u"></param>
-        /// <returns></returns>
         [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -85,7 +59,7 @@ namespace FileShare.Controllers
 
                 if (result.Succeeded)
                 {
-                    var user = await _signInManager.UserManager.FindByEmailAsync(u.Username);
+                    var user = await _userManager.FindByEmailAsync(u.Username);
 
                     var authProperties = new AuthenticationProperties
                     {
@@ -122,10 +96,6 @@ namespace FileShare.Controllers
             return View(u);
         }
 
-        /// <summary>
-        /// Logout
-        /// </summary>
-        /// <returns></returns>
         public async Task<ActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
@@ -155,6 +125,73 @@ namespace FileShare.Controllers
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
+        
+        [AllowAnonymous]
+        public ActionResult Create(string returnUrl = "")
+        {
+            return View(new CreateModel {  ReturnUrl = returnUrl });
+        }
 
+        [AllowAnonymous]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Create(CreateModel create)
+        {
+            if (ModelState.IsValid)
+            {
+                if (create.Password != create.Password2)
+                {
+                    ModelState.AddModelError("", "passwords not equal!");
+                }
+                else
+                {
+                    var user = await _userManager.FindByEmailAsync(create.Username);
+                    if (user != null)
+                    {
+                        ModelState.AddModelError("", "This e-mail already registered!");
+                    }
+                    else
+                    {
+                        user = new ApplicationIdentityUser
+                        {
+                            Email = create.Username,
+                            UserName = create.Username,
+                            LockoutEnabled = false
+                        };
+
+                        var result = await _userManager.CreateAsync(user, create.Password);
+                        if (result.Succeeded)
+                        {
+                            result = await _userManager.AddToRolesAsync(user, new string[] { "User" });
+                            if (result.Succeeded)
+                            {
+                                return await Login(new LoginModel
+                                {
+                                    Password = create.Password,
+                                    Username = create.Username,
+                                    RememberMe = false,
+                                    Id = 0,
+                                    ReturnUrl = create.ReturnUrl
+                                });
+                            }
+                        }
+                        else
+                        {
+                            foreach (var e in result.Errors)
+                            {
+                                ModelState.AddModelError("", e.Description);
+                            }
+                        }
+                    }
+                }
+            }
+            return View(create);
+        }
+
+
+        public ActionResult Forgot()
+        {
+            return View();
+        }
     }
 }

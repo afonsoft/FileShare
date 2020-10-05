@@ -1,13 +1,7 @@
-﻿@model FileShare.Models.LoginModel
-@using Microsoft.AspNetCore.Identity
-@using FileShare.Repository;
-@inject SignInManager<ApplicationIdentityUser> SignInManager
-@inject UserManager<ApplicationIdentityUser> UserManager
+﻿@model FileShare.Models.CreateModel
+
 @{
-    var user = await UserManager.GetUserAsync(User);
-}
-@{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = "Create";
 }
 <div class="container-fluid">
     <div class="row">
@@ -33,7 +27,7 @@
 					    </div>
 				    </div>
 				    <div class="d-flex justify-content-center form_container">
-					    <form id="loginForm"  asp-action="Login" asp-route-returnurl="@Model.ReturnUrl" style="width: 90%;">
+					    <form id="createForm"  asp-action="Create" style="width: 90%;">
 						    
                         @Html.AntiForgeryToken()
                          <div asp-validation-summary="ModelOnly" class="validation-summary alert alert-danger alert-dismissable" style="width:100%">
@@ -55,25 +49,17 @@
 							</div>
 							<input type="password" asp-for="Password" class="form-control input_pass" placeholder="password" style="font-size: 10pt;">
 						</div>
-						<div class="form-group">
-							<div class="custom-control custom-checkbox">
-								<input type="checkbox" class="custom-control-input" asp-for="RememberMe" id="customControlInline">
-								<label class="custom-control-label" for="customControlInline" asp-for="RememberMe"></label>
+                        <div class="input-group mb-2">
+							<div class="input-group-append">
+								<span class="input-group-text"><i class="fas fa-key"></i></span>
 							</div>
+							<input type="password" asp-for="Password2" class="form-control input_pass" placeholder="password" style="font-size: 10pt;">
 						</div>
 						<div class="d-flex justify-content-center mt-3 login_container">
-                            <input class="btn login_btn" type="submit" title="Login" value="Login" />
+                            <input class="btn login_btn" type="submit" title="Create" value="Create" />
 				        </div>
                         </form>
 				    </div>
-                    <div class="mt-4">
-					<div class="d-flex justify-content-center links">
-						Don't have an account? <a asp-controller="Auth" asp-action="Create" class="ml-2">Sign Up</a>
-					</div>
-					<div class="d-flex justify-content-center links">
-						<a asp-controller="Auth" asp-action="Forgot">Forgot your password?</a>
-					</div>
-				</div>
 			    </div>
 		    </div>
         </div>

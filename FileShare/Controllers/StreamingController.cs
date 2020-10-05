@@ -259,6 +259,7 @@ namespace FileShare.Controllers
                             UserId = user.Id,
                             CreationDateTime = DateTime.Now
                         });
+                        await _context.SaveChangesAsync();
                     }
                 }
             }

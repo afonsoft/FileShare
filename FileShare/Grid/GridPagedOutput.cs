@@ -3,10 +3,12 @@ using System.Collections.Generic;
 
 namespace FileShare.Grid
 {
-    public class GridPagedOutput<T> where T : class
+    public class GridPagedOutput<T> where T : class, new()
     {
         public GridPagedOutput(IEnumerable<T> value)
         {
+            if (value == null)
+                value = new List<T>();
             this.Rows = value;
         }
 

@@ -1,4 +1,11 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity
+@using FileShare.Repository;
+@inject SignInManager<ApplicationIdentityUser> SignInManager
+@inject UserManager<ApplicationIdentityUser> UserManager
+@{
+    var user = await UserManager.GetUserAsync(User);
+}
+@{
     ViewData["Title"] = "List";
 }
 

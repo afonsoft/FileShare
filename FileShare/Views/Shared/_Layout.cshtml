@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@using FileShare.Repository;
+@inject SignInManager<ApplicationIdentityUser> SignInManager
+@inject UserManager<ApplicationIdentityUser> UserManager
+
+<!DOCTYPE html>
 <!--[if lt IE 7 ]><html lang="pt" class="no-touch no-js ie6"><![endif]-->
 <!--[if IE 7 ]><html lang="pt" class="no-touch no-js ie7"><![endif]-->
 <!--[if IE 8 ]><html lang="pt" class="no-touch no-js ie8"><![endif]-->
@@ -104,6 +109,11 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
+                        @if(SignInManager.IsSignedIn(User)){
+                             <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Logout">Logout</a>
+                        </li>
+                        }
                     </ul>
                 </div>
             </div>

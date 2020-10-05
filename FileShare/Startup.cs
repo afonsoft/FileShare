@@ -24,6 +24,7 @@ using Microsoft.AspNetCore.ResponseCompression;
 using System.IO.Compression;
 using FileShare.Filters;
 using Microsoft.AspNetCore.HttpOverrides;
+using Hangfire.Dashboard;
 
 namespace FileShare
 {

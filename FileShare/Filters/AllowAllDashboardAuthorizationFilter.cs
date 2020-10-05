@@ -8,6 +8,11 @@ namespace FileShare.Filters
     {
         public bool Authorize(DashboardContext context)
         {
+            return true;
+        }
+
+        public static bool IsUserAuthorizedToEditHangfireDashboard(DashboardContext context)
+        {
             var httpContext = context.GetHttpContext();
             var _userManager = httpContext.RequestServices.GetRequiredService<UserManager<ApplicationIdentityUser>>();
 

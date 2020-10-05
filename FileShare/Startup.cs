@@ -220,7 +220,8 @@ namespace FileShare
             app.UseHangfireDashboard("/hangfire", new DashboardOptions
             {
                 DisplayStorageConnectionString = false,
-                Authorization = new[] { new AllowAllDashboardAuthorizationFilter() }
+                Authorization = new[] { new AllowAllDashboardAuthorizationFilter() },
+                IsReadOnlyFunc = (DashboardContext context) => !AllowAllDashboardAuthorizationFilter.IsUserAuthorizedToEditHangfireDashboard(context)
             });
 
             app.UseForwardedHeaders(new ForwardedHeadersOptions

@@ -15,20 +15,22 @@ namespace FileShare.Jobs
 {
     public class HangfireJob : IHangfireJob
     {
-        private readonly ApplicationDbContext _context;
         private readonly ILogger<HangfireJob> _logger;
         private readonly string _targetFilePath;
+        private readonly IServiceProvider _serviceProvider;
+
         private static bool isInProcessJobDeleteFilesNotExist = false;
         private static bool isInProcessJobDeleteOldFiles = false;
         private static bool isInProcessJobImportPermittedExtensions = false;
-        public HangfireJob(ILogger<HangfireJob> logger, ApplicationDbContext context, IWebHostEnvironment env)
+        public HangfireJob(ILogger<HangfireJob> logger, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
             _logger = logger;
-            _context = context;
             _targetFilePath = Path.Combine(env.WebRootPath, "FILES");
+            _serviceProvider = serviceProvider;
         }
         public void Initialize()
         {
+            
             RecurringJob.AddOrUpdate<IHangfireJob>("DelOldFiles", x => x.JobDeleteOldFiles(null), Cron.Daily(), TimeZoneInfo.Local);
             RecurringJob.AddOrUpdate<IHangfireJob>("DelFilesNotExist", x => x.JobDeleteFilesNotExist(null), Cron.Daily(), TimeZoneInfo.Local);
             RecurringJob.AddOrUpdate<IHangfireJob>("PermittedExtensions", x => x.JobImportPermittedExtensions(null), Cron.Hourly(), TimeZoneInfo.Local);
@@ -47,7 +49,7 @@ namespace FileShare.Jobs
             try
             {
                 context.WriteLine("Job Inicializado");
-
+                ApplicationDbContext _context = _serviceProvider.GetService<ApplicationDbContext>();
                 var filesInDb = await _context.Files.Select(x => x.StorageName)
                                             .ToListAsync();
 
@@ -124,7 +126,7 @@ namespace FileShare.Jobs
             try
             {
                 context.WriteLine("Job Inicializado");
-
+                ApplicationDbContext _context = _serviceProvider.GetService<ApplicationDbContext>();
                 var filesInDb = await _context.Files
                                             .Where(x => x.CreationDateTime <= DateTime.Now.AddMonths(2))
                                             .ToListAsync();
@@ -180,6 +182,7 @@ namespace FileShare.Jobs
             try
             {
                 context.WriteLine("Job Inicializado");
+                ApplicationDbContext _context = _serviceProvider.GetService<ApplicationDbContext>();
                 //Ler um arquivo txt com as extensões permitidas e salvar na base
                 int totalSucess = 0;
                 int totalSkip = 0;

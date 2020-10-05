@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using FileShare.Models;
 using FileShare.Repository;
@@ -10,25 +13,28 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 
 namespace FileShare.Controllers
 {
     public class AuthController : Controller
     {
         private readonly ILogger<AuthController> _logger;
+        
+        private readonly UserManager<ApplicationIdentityUser> _userManager;
         private readonly SignInManager<ApplicationIdentityUser> _signInManager;
-
+        
         /// <summary>
         /// AuthController
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="signInManager"></param>
         /// <param name="userManager"></param>
-        public AuthController(ILogger<AuthController> logger, SignInManager<ApplicationIdentityUser> signInManager)
+        public AuthController(ILogger<AuthController> logger, SignInManager<ApplicationIdentityUser> signInManager, UserManager<ApplicationIdentityUser> userManager)
         {
             _logger = logger;
             _signInManager = signInManager;
-            // _userManager = userManager; UserManager<ApplicationIdentityUser> userManager
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -63,6 +69,29 @@ namespace FileShare.Controllers
             return View(model);
         }
 
+        [Authorize]
+        public async Task<string> GenerateToken()
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes("Senha#2021Afonsoft");
+
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.Name, user.UserName.ToString()),
+                    new Claim(ClaimTypes.Email, user.Email.ToString()),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+                }),
+                Expires = DateTime.UtcNow.AddHours(2),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
+
         /// <summary>
         /// Login
         /// </summary>
@@ -86,7 +115,7 @@ namespace FileShare.Controllers
                         AllowRefresh = true,
                         IsPersistent = u.RememberMe,
                         IssuedUtc = DateTime.UtcNow,
-                        ExpiresUtc = (u.RememberMe ? DateTime.UtcNow.AddDays(30) : DateTime.UtcNow.AddMinutes(30))
+                        ExpiresUtc = (u.RememberMe ? DateTime.UtcNow.AddMonths(3) : DateTime.UtcNow.AddMinutes(30))
                     };
 
                     authProperties.Items.Add("Username", u.Username);

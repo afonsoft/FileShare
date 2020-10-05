@@ -223,7 +223,7 @@ namespace FileShare.Controllers
             }
             catch (Exception)
             {
-                fileUploaded.Type = FindMimeHelpers.GetMimeFromExtensions(Path.GetExtension(fileNameForDisplay).ToLowerInvariant());
+                //fileUploaded.Type = FindMimeHelpers.GetMimeFromExtensions(Path.GetExtension(fileNameForDisplay).ToLowerInvariant());
             }
 
             if(string.IsNullOrEmpty(fileUploaded.Type))

@@ -31,17 +31,19 @@ namespace FileShare.Controllers
         private const int BufferSize = 8192;
         private const int kbps = 500 * 1024; //500kbps
         private readonly string[] _permittedExtensions;
+        private readonly UserManager<ApplicationIdentityUser> _userManager;
         private readonly SignInManager<ApplicationIdentityUser> _signInManager;
 
         // Get the default form options so that we can use them to set the default 
         // limits for request body data.
         private static readonly FormOptions _defaultFormOptions = new FormOptions();
 
-        public StreamingController(ILogger<StreamingController> logger, ApplicationDbContext context, IWebHostEnvironment env, SignInManager<ApplicationIdentityUser> signInManager)
+        public StreamingController(ILogger<StreamingController> logger, ApplicationDbContext context, IWebHostEnvironment env, SignInManager<ApplicationIdentityUser> signInManager, UserManager<ApplicationIdentityUser> userManager)
         {
             _logger = logger;
             _context = context;
             _signInManager = signInManager;
+            _userManager = userManager;
             _fileSizeLimit = int.MaxValue;
             _targetFilePath = Path.Combine(env.WebRootPath, "FILES");
             _permittedExtensions = context.PermittedExtension.Select(x => x.Extension).ToArray();
@@ -221,8 +223,9 @@ namespace FileShare.Controllers
             {
                 fileUploaded.Type = FindMimeHelpers.GetMimeFromFile(fileNameFinaliy);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError("Erro para recuperar o MineType : " + ex.Message);
                 //fileUploaded.Type = FindMimeHelpers.GetMimeFromExtensions(Path.GetExtension(fileNameForDisplay).ToLowerInvariant());
             }
 
@@ -232,6 +235,29 @@ namespace FileShare.Controllers
             //Salvar no Banco de Dados
             await _context.Files.AddAsync(fileUploaded);
             await _context.SaveChangesAsync();
+
+            ApplicationIdentityUser user = null;
+            try
+            {
+                if (HttpContext.User != null)
+                {
+                    user = await _userManager.GetUserAsync(HttpContext.User);
+                    if (user != null)
+                    {
+                        await _context.FilesUsers.AddAsync(new FileUserModel
+                        {
+                            Id = Guid.NewGuid(),
+                            FileId = fileUploaded.Id,
+                            UserId = user.Id,
+                            CreationDateTime = DateTime.Now
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Erro para associar o arquivo {fileUploaded.Id} ao usuário {user?.Id} - {ex}");
+            }
 
             return new Models.FileModel
             {

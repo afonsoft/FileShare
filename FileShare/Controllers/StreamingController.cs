@@ -61,7 +61,7 @@ namespace FileShare.Controllers
             {
                 if (!MultipartRequestHelper.IsMultipartContentType(Request.ContentType))
                 {
-                    ModelState.AddModelError("Error", $"The request couldn't be processed (Error 0).");
+                    ModelState.AddModelError("Error", $"The request couldn't be processed (Error -1).");
                     return BadRequest(ModelState);
                 }
 

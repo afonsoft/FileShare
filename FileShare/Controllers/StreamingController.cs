@@ -64,6 +64,12 @@ namespace FileShare.Controllers
                     return BadRequest(ModelState);
                 }
 
+                if (!MultipartRequestHelper.ValidateAntiforgeryToken(Request.Headers))
+                {
+                    ModelState.AddModelError("Error", $"The request couldn't be processed (Error 0).");
+                    return BadRequest(ModelState);
+                }
+
                 var formAccumulator = new KeyValueAccumulator();
                 var trustedFileNameForDisplay = string.Empty;
                 var streamedFileContent = new byte[0];

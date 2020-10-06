@@ -1,4 +1,5 @@
-﻿using Microsoft.Net.Http.Headers;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Net.Http.Headers;
 using System;
 using System.IO;
 
@@ -48,6 +49,11 @@ namespace FileShare.Utilities
                 && contentDisposition.DispositionType.Equals("form-data")
                 && (!string.IsNullOrEmpty(contentDisposition.FileName.Value)
                     || !string.IsNullOrEmpty(contentDisposition.FileNameStar.Value));
+        }
+
+        public static bool ValidateAntiforgeryToken(IHeaderDictionary headers)
+        {
+            return headers != null;
         }
     }
 }

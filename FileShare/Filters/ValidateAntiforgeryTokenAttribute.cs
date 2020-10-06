@@ -26,7 +26,7 @@ namespace FileShare.Filters
 
         private void ValidateToken(ResultExecutingContext context)
         {
-           
+         
         }
     }
 }

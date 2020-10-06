@@ -35,7 +35,7 @@ namespace FileShare.Memory
             }
             else
             {
-                throw new NotSupportedException("Length is too large for byte");
+                return _streamBuffers[0];
             }
         }
 

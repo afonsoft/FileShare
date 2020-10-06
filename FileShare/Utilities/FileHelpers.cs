@@ -12,41 +12,40 @@ namespace FileShare.Utilities
     public static class FileHelpers
     {
 
-        public static async Task<byte[]> ProcessStreamedFile(
+        public static async Task<HugeMemoryStream> ProcessStreamedFile(
             MultipartSection section, ContentDispositionHeaderValue contentDisposition,
             ModelStateDictionary modelState, string[] permittedExtensions, long sizeLimit)
         {
             try
             {
-                using (var memoryStream = new HugeMemoryStream())
+                var memoryStream = new HugeMemoryStream();
+
+                await section.Body.CopyToAsync(memoryStream);
+
+                // Check if the file is empty or exceeds the size limit.
+                if (memoryStream.Length == 0)
                 {
-                    await section.Body.CopyToAsync(memoryStream);
-
-                    // Check if the file is empty or exceeds the size limit.
-                    if (memoryStream.Length == 0)
-                    {
-                        modelState.AddModelError("Error", "The file is empty.");
-                    }
-                    else if (memoryStream.Length > sizeLimit)
-                    {
-                        var megabyteSizeLimit = sizeLimit / 1048576;
-                        modelState.AddModelError("Error", $"The file exceeds {megabyteSizeLimit:N1} MB.");
-                    }
-                    else if (!IsValidFileExtensionAndSignature(contentDisposition.FileName.Value, memoryStream, permittedExtensions))
-                    {
-                        modelState.AddModelError("Error", $"The file type isn't permitted or the file's signature doesn't match the file's extension. {Path.GetExtension(contentDisposition.FileName.Value).ToLowerInvariant()}");
-                    }
-                    else
-                    {
-                        var bytes = memoryStream.ToArray();
-                        if (!IsValidFileExtensionAndSignature(bytes, permittedExtensions))
-                        {
-                            modelState.AddModelError("Error", $"The file type isn't permitted or the file's signature doesn't match the file's extension. {FindMimeHelpers.GetMimeFromByte(bytes)} - {FindMimeHelpers.GetExtensionsFromByte(bytes)[0]}");
-                        }
-
-                        return bytes;
-                    }
+                    modelState.AddModelError("Error", "The file is empty.");
                 }
+                else if (memoryStream.Length > sizeLimit)
+                {
+                    var megabyteSizeLimit = sizeLimit / 1048576;
+                    modelState.AddModelError("Error", $"The file exceeds {megabyteSizeLimit:N1} MB.");
+                }
+                else if (!IsValidFileExtensionAndSignature(contentDisposition.FileName.Value, memoryStream, permittedExtensions))
+                {
+                    modelState.AddModelError("Error", $"The file type isn't permitted or the file's signature doesn't match the file's extension. {Path.GetExtension(contentDisposition.FileName.Value).ToLowerInvariant()}");
+                }
+                else
+                {
+                    if (!IsValidFileExtensionAndSignature(memoryStream, permittedExtensions))
+                    {
+                        modelState.AddModelError("Error", $"The file type isn't permitted or the file's signature doesn't match the file's extension. {FindMimeHelpers.GetMimeFromStream(memoryStream)} - {FindMimeHelpers.GetExtensionsFromStream(memoryStream)[0]}");
+                    }
+
+                    return memoryStream;
+                }
+
             }
             catch (Exception ex)
             {
@@ -55,14 +54,14 @@ namespace FileShare.Utilities
                 modelState.AddModelError("StackTrace", ex.StackTrace);
             }
 
-            return new byte[0];
+            return new HugeMemoryStream();
         }
 
-        private static bool IsValidFileExtensionAndSignature(byte[] bytes, string[] permittedExtensions)
+        private static bool IsValidFileExtensionAndSignature(Stream stream, string[] permittedExtensions)
         {
             try
             {
-                var ext = "." + FindMimeHelpers.GetExtensionsFromByte(bytes)[0];
+                var ext = "." + FindMimeHelpers.GetExtensionsFromStream(stream)[0];
 
                 if (string.IsNullOrEmpty(ext) || !permittedExtensions.Contains(ext))
                 {

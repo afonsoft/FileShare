@@ -87,7 +87,7 @@ function UploadSubimit() {
     $.ajax({
         url: 'Streaming/UploadFileStream',
         headers: {
-            'RequestVerificationToken': getCookie('RequestVerificationToken'),
+            'RequestVerificationToken': document.getElementById('RequestVerificationToken'),
             'X-CSRF-TOKEN-REQUEST': document.getElementById('RequestVerificationToken')
         },
         type: 'POST',
@@ -96,6 +96,7 @@ function UploadSubimit() {
         contentType: false,
         processData: false,
         enctype: 'multipart/form-data',
+        timeout: 5 * 60 * 1000,
         xhr: function () {
             //upload Progress
             var xhr = $.ajaxSettings.xhr();

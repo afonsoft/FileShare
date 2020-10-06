@@ -20,6 +20,7 @@ using FileShare.Net;
 using System.Linq;
 using Microsoft.AspNetCore.Identity;
 using FileShare.Filters;
+using FileShare.Memory;
 
 namespace FileShare.Controllers
 {
@@ -72,7 +73,7 @@ namespace FileShare.Controllers
 
                 var formAccumulator = new KeyValueAccumulator();
                 var trustedFileNameForDisplay = string.Empty;
-                var streamedFileContent = new byte[0];
+                var streamedFileContent = new HugeMemoryStream();
 
                 var boundary = MultipartRequestHelper.GetBoundary(MediaTypeHeaderValue.Parse(Request.ContentType), _defaultFormOptions.MultipartBoundaryLengthLimit);
                 var reader = new MultipartReader(boundary, HttpContext.Request.Body);
@@ -158,7 +159,7 @@ namespace FileShare.Controllers
                     return BadRequest(ModelState);
                 }
 
-                if (string.IsNullOrEmpty(trustedFileNameForDisplay) || streamedFileContent.Length <= 0)
+                if (string.IsNullOrEmpty(trustedFileNameForDisplay) || streamedFileContent.Length <=0)
                 {
                     ModelState.AddModelError("Error", "The request couldn't be processed (Error 6).");
                     return BadRequest(ModelState);
@@ -173,7 +174,7 @@ namespace FileShare.Controllers
                 fileNameFinaliy = Path.Combine(_targetFilePath, trustedFileNameForFileStorage);
                 using (var targetStream = System.IO.File.Create(fileNameFinaliy))
                 {
-                    await targetStream.WriteAsync(streamedFileContent);
+                    streamedFileContent.CopyTo(targetStream);
                     _logger.LogInformation($"Uploaded file '{trustedFileNameForDisplay}' saved to '{_targetFilePath}' as {trustedFileNameForFileStorage}");
                 }
 

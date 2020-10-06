@@ -14,6 +14,7 @@ using System.Linq;
 
 namespace FileShare.Jobs
 {
+    [DisableMultipleQueuedItemsFilter]
     public class HangfireJob : IHangfireJob
     {
         private readonly ILogger<HangfireJob> _logger;
@@ -38,7 +39,6 @@ namespace FileShare.Jobs
             RecurringJob.AddOrUpdate<IHangfireJob>("PermittedExtensions", x => x.JobImportPermittedExtensions(null), Cron.HourInterval(6), TimeZoneInfo.Local);
         }
 
-        [DisableMultipleQueuedItemsFilter]
         public async void JobDeleteFilesNotExist(PerformContext context)
         {
             if (isInProcessJobDeleteFilesNotExist)
@@ -145,7 +145,7 @@ namespace FileShare.Jobs
             }
         }
 
-        [DisableMultipleQueuedItemsFilter]
+  
         public async void JobDeleteOldFiles(PerformContext context)
         {
             if (isInProcessJobDeleteOldFiles)
@@ -242,7 +242,7 @@ namespace FileShare.Jobs
             }
         }
 
-        [DisableMultipleQueuedItemsFilter]
+   
         public async void JobImportPermittedExtensions(PerformContext context)
         {
             if (isInProcessJobImportPermittedExtensions)

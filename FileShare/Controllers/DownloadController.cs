@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace FileShare.Controllers
 {
-    [GenerateAntiforgeryTokenCookie]
+    [GenerateAntiforgeryToken]
     public class DownloadController : Controller
     {
         private readonly ApplicationDbContext _context;

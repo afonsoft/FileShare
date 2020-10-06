@@ -19,6 +19,7 @@ using System.Text;
 using FileShare.Net;
 using System.Linq;
 using Microsoft.AspNetCore.Identity;
+using FileShare.Filters;
 
 namespace FileShare.Controllers
 {
@@ -28,8 +29,8 @@ namespace FileShare.Controllers
         private readonly long _fileSizeLimit;
         private readonly ILogger<StreamingController> _logger;
         private readonly string _targetFilePath;
-        private const int BufferSize = 8192;
-        private const int kbps = 500 * 1024; //500kbps
+        private const int BufferSize = 4096;
+        private const int kbps = 1024 * 1024; //1024kbps or 1Mbps
         private readonly string[] _permittedExtensions;
         private readonly UserManager<ApplicationIdentityUser> _userManager;
         private readonly SignInManager<ApplicationIdentityUser> _signInManager;
@@ -132,6 +133,11 @@ namespace FileShare.Controllers
                         }
                     }
 
+                    if (!ModelState.IsValid)
+                    {
+                        return BadRequest(ModelState);
+                    }
+
                     section = await reader.ReadNextSectionAsync();
                 }
 
@@ -152,6 +158,10 @@ namespace FileShare.Controllers
                     return BadRequest(ModelState);
                 }
 
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
 
                 string trustedFileNameForFileStorage = Path.GetRandomFileName();
                 fileNameFinaliy = Path.Combine(_targetFilePath, trustedFileNameForFileStorage);

@@ -50,7 +50,7 @@ namespace FileShare.Utilities
             }
             catch (Exception ex)
             {
-                modelState.AddModelError("Error", $"The upload failed. Please contact the Help Desk for support. Error: {ex.HResult}");
+                modelState.AddModelError("Error", $"The upload failed. Please contact the Help Desk for support. Error: {ex.Message}");
                 modelState.AddModelError("Exception", ex.Message);
                 modelState.AddModelError("StackTrace", ex.StackTrace);
             }

@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace FileShare.Controllers
 {
-    [GenerateAntiforgeryTokenCookie]
+    [GenerateAntiforgeryToken]
     public class HomeController : Controller
     {
         private readonly ApplicationDbContext _context;

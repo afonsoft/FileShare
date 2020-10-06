@@ -15,7 +15,7 @@ using System.Collections.Generic;
 
 namespace FileShare.Controllers
 {
-    [GenerateAntiforgeryTokenCookie]
+    [GenerateAntiforgeryToken]
     [Authorize]
     public class ListController : Controller
     {

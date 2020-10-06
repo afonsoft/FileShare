@@ -229,7 +229,6 @@ namespace FileShare.Memory
 
         #endregion
 
-
         #region IDispose
         protected override void Dispose(bool disposing)
         {

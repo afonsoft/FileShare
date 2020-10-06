@@ -29,9 +29,17 @@ namespace FileShare.Filters
         public void OnPerformed(PerformedContext filterContext)
         {
             Logger.InfoFormat("Starting to perform job `{0}`", filterContext.BackgroundJob.Id);
-            if (filterContext.Exception == null || filterContext.ExceptionHandled)
+            try
             {
-                RemoveFingerprint(filterContext.Connection, filterContext.BackgroundJob.Job);
+                if (filterContext.Exception == null || filterContext.ExceptionHandled)
+                {
+                    RemoveFingerprint(filterContext.Connection, filterContext.BackgroundJob.Job);
+                }
+            }
+            catch (Exception)
+            {
+                // Unhandled exceptions can cause an endless loop.
+                // Therefore, catch and ignore them all.
             }
         }
 
@@ -66,10 +74,13 @@ namespace FileShare.Filters
         private static void RemoveFingerprint(IStorageConnection connection, Job job)
         {
             using (connection.AcquireDistributedLock(GetFingerprintLockKey(job), LockTimeout))
-            using (var transaction = connection.CreateWriteTransaction())
             {
-                transaction.RemoveHash(GetFingerprintKey(job));
-                transaction.Commit();
+                string fingerprintKey = GetFingerprintKey(job);
+                using (var transaction = connection.CreateWriteTransaction())
+                {
+                    transaction.RemoveHash(fingerprintKey);
+                    transaction.Commit();
+                }
             }
         }
 

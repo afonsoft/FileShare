@@ -197,10 +197,9 @@ namespace FileShare
             services.Configure<GzipCompressionProviderOptions>(options => { options.Level = CompressionLevel.Fastest; });
 
             services.AddHangfireServer(options => {
-                options.WorkerCount = 4;
+                options.WorkerCount = 1;
                 options.SchedulePollingInterval = TimeSpan.FromMinutes(1);
-                options.ServerCheckInterval = TimeSpan.FromMinutes(5);
-                options.ServerTimeout = TimeSpan.FromMinutes(5);
+                options.ServerCheckInterval = TimeSpan.FromMinutes(1);
             });
         }
 

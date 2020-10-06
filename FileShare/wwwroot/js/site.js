@@ -34,22 +34,19 @@ function inputFileTemplate() {
         $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
     });
 }
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
+
 
 function googleAdsense(count) {
     try {
+        console.log("googleAdsense count " + count);
         $(".adsbygoogle").each(function () {
             (adsbygoogle = window.adsbygoogle || []).push({});
         });
     } catch{
-        if (count == 3)
+        if (count == 4)
             return;
         count++;
-        console.log("googleAdsense count " + count);
-        sleep(1000);
-        googleAdsense(count);
+        setTimeout(googleAdsense(count), 1000);
     }
 }
 
@@ -61,7 +58,7 @@ function showAlertDanger(message) {
 $(document).ready(function () {
     inputFileTemplate();
     countDown();
-    googleAdsense(0);
+    setTimeout(googleAdsense(1), 100);
 });
 
 function countDown() {

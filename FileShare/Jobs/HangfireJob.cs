@@ -22,6 +22,7 @@ namespace FileShare.Jobs
         private static bool isInProcessJobDeleteFilesNotExist = false;
         private static bool isInProcessJobDeleteOldFiles = false;
         private static bool isInProcessJobImportPermittedExtensions = false;
+
         public HangfireJob(ILogger<HangfireJob> logger, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
             _logger = logger;
@@ -31,9 +32,9 @@ namespace FileShare.Jobs
         public void Initialize()
         {
             
-            RecurringJob.AddOrUpdate<IHangfireJob>("DelOldFiles", x => x.JobDeleteOldFiles(null), Cron.Daily(), TimeZoneInfo.Local);
-            RecurringJob.AddOrUpdate<IHangfireJob>("DelFilesNotExist", x => x.JobDeleteFilesNotExist(null), Cron.Daily(), TimeZoneInfo.Local);
-            RecurringJob.AddOrUpdate<IHangfireJob>("PermittedExtensions", x => x.JobImportPermittedExtensions(null), Cron.Hourly(), TimeZoneInfo.Local);
+            RecurringJob.AddOrUpdate<IHangfireJob>("DelOldFiles", x => x.JobDeleteOldFiles(null), Cron.HourInterval(12), TimeZoneInfo.Local);
+            RecurringJob.AddOrUpdate<IHangfireJob>("DelFilesNotExist", x => x.JobDeleteFilesNotExist(null), Cron.HourInterval(8), TimeZoneInfo.Local);
+            RecurringJob.AddOrUpdate<IHangfireJob>("PermittedExtensions", x => x.JobImportPermittedExtensions(null), Cron.HourInterval(6), TimeZoneInfo.Local);
         }
 
         public async void JobDeleteFilesNotExist(PerformContext context)
@@ -44,10 +45,9 @@ namespace FileShare.Jobs
                 return;
             }
 
-            isInProcessJobDeleteFilesNotExist = true;
-
             try
             {
+                isInProcessJobDeleteFilesNotExist = true;
                 context.WriteLine("Job Inicializado");
                 ApplicationDbContext _context = _serviceProvider.GetService<ApplicationDbContext>();
                 
@@ -137,8 +137,10 @@ namespace FileShare.Jobs
                 context.WriteLine($"Erro no Job : {ex}");
                 _logger.LogError(ex, $"Error on Job JobDeleteFilesNotExist {context.BackgroundJob.Id}-{ex}");
             }
-
-            isInProcessJobDeleteFilesNotExist = false;
+            finally
+            {
+                isInProcessJobDeleteFilesNotExist = false;
+            }
         }
 
         public async void JobDeleteOldFiles(PerformContext context)
@@ -149,10 +151,9 @@ namespace FileShare.Jobs
                 return;
             }
 
-            isInProcessJobDeleteOldFiles = true;
-
             try
             {
+                isInProcessJobDeleteOldFiles = true;
                 context.WriteLine("Job Inicializado");
                 ApplicationDbContext _context = _serviceProvider.GetService<ApplicationDbContext>();
 
@@ -222,7 +223,7 @@ namespace FileShare.Jobs
                 }
                 else
                 {
-                    context.WriteLine("Nenhum arquivo para excluir");
+                    context.WriteLine("Nenhum arquivo para remover do DB");
                 }
 
                 context.WriteLine("Job Finalizado");
@@ -232,8 +233,10 @@ namespace FileShare.Jobs
                 context.WriteLine($"Erro no Job : {ex}");
                 _logger.LogError(ex, $"Erro on Job JobDeleteOldFiles {context.BackgroundJob.Id}-{ex}");
             }
-
-            isInProcessJobDeleteOldFiles = false;
+            finally
+            {
+                isInProcessJobDeleteOldFiles = false;
+            }
         }
 
         public async void JobImportPermittedExtensions(PerformContext context)
@@ -244,10 +247,9 @@ namespace FileShare.Jobs
                 return;
             }
 
-            isInProcessJobImportPermittedExtensions = true;
-
             try
             {
+                isInProcessJobImportPermittedExtensions = true;
                 context.WriteLine("Job Inicializado");
                 ApplicationDbContext _context = _serviceProvider.GetService<ApplicationDbContext>();
                 //Ler um arquivo txt com as extensões permitidas e salvar na base
@@ -287,20 +289,33 @@ namespace FileShare.Jobs
                                         Id = Guid.NewGuid(),
                                         Extension = ext
                                     });
-
+                                    await _context.SaveChangesAsync();
+                                    totalSucess++;
                                 }
                                 else
                                 {
+                                   
                                     if (l.Length > 1 && !string.IsNullOrEmpty(l[1]))
                                     {
-                                        model.Description = l[1];
-                                        model.Extension = ext;
-                                        _context.PermittedExtension.Update(model);
+                                        string description = l[1].ToLower().Trim();
+                                        if (model.Description != description)
+                                        {
+                                            model.Description = description;
+                                            model.Extension = ext;
+                                            _context.PermittedExtension.Update(model);
+                                            await _context.SaveChangesAsync();
+                                            totalSucess++;
+                                        }
+                                        else
+                                        {
+                                            totalSkip++;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        totalSkip++;
                                     }
                                 }
-
-                                await _context.SaveChangesAsync();
-                                totalSucess++;
                             }
                             else
                             {
@@ -332,8 +347,10 @@ namespace FileShare.Jobs
                 context.WriteLine($"Erro no Job : {ex}");
                 _logger.LogError(ex, $"Erro on Job JobImportPermittedExtensions {context.BackgroundJob.Id}-{ex}");
             }
-
-            isInProcessJobImportPermittedExtensions = false;
+            finally
+            {
+                isInProcessJobImportPermittedExtensions = false;
+            }
         }
     }
 }

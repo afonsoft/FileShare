@@ -77,11 +77,11 @@ namespace FileShare
 
             services.AddSingleton(typeof(IRepository<,>), typeof(Repository<,>));
 
-            services.AddDbContextPool<ApplicationDbContext>(options =>
+            services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseLazyLoadingProxies(true);
                 options.UseSqlServer(connectionString);
-            });
+            }, ServiceLifetime.Transient);
 
             services.AddIdentity<ApplicationIdentityUser, ApplicationIdentityRole>()
                     .AddEntityFrameworkStores<ApplicationDbContext>()

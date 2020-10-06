@@ -87,12 +87,6 @@ namespace FileShare.Repository
         }
 
         /// <summary>
-        /// get
-        /// </summary>
-        /// <returns></returns>
-        public virtual Task<List<TEntity>> GetAsync() => Table.ToListAsync();
-
-        /// <summary>
         /// Get
         /// </summary>
         /// <param name="id"></param>
@@ -245,6 +239,12 @@ namespace FileShare.Repository
 
             return await Context.SaveChangesAsync();
         }
+
+        /// <summary>
+        /// get
+        /// </summary>
+        /// <returns></returns>
+        public virtual Task<List<TEntity>> GetAsync() => Table.ToListAsync();
 
         /// <summary>
         /// GetAsync

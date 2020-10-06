@@ -50,15 +50,20 @@ namespace FileShare.Jobs
             {
                 context.WriteLine("Job Inicializado");
                 ApplicationDbContext _context = _serviceProvider.GetService<ApplicationDbContext>();
+                
                 var filesInDb = await _context.Files.Select(x => x.StorageName)
                                             .ToListAsync();
 
                 var filesInDrive = Directory.GetFiles(_targetFilePath)
+                                            .Where(x => !x.Contains("index.htm")
+                                                     && !x.Contains("Extensions.txt"))
                                             .Select(x => x.Split("\\").Last())
                                             .ToList();
 
                 var filesNotExistInDb = filesInDb.Where(x => !filesInDrive.Contains(x)).ToList();
-                var filesNotExistInDrive = filesInDrive.Where(x => !filesInDb.Contains(x)).ToList();
+                var filesNotExistInDrive = filesInDrive.Where(x => !filesInDb.Contains(x) 
+                                                                && !x.Contains("index.htm")
+                                                                && !x.Contains("Extensions.txt")).ToList();
 
                 context.WriteLine($"Total de registros a deletar {filesNotExistInDb.Count}");
                 context.WriteLine($"Total de arquivos a deletar {filesNotExistInDrive.Count}");
@@ -70,8 +75,19 @@ namespace FileShare.Jobs
                         var fileToDelete = Path.Combine(_targetFilePath, file);
                         if (File.Exists(fileToDelete) && !fileToDelete.Contains("index.htm") && !fileToDelete.Contains("Extensions.txt"))
                         {
-                            context.WriteLine($"Delete file {fileToDelete}");
-                            File.Delete(fileToDelete);
+                            if (!filesInDb.Any(x => x.Contains(file)))
+                            {
+                                context.WriteLine($"Delete file {file}");
+                                File.Delete(fileToDelete);
+                            }
+                            else
+                            {
+                                context.WriteLine($"File {file} not deleted");
+                            }
+                        }
+                        else
+                        {
+                            context.WriteLine($"File {file} not exist");
                         }
                     }
                     catch (Exception ex)
@@ -90,9 +106,21 @@ namespace FileShare.Jobs
 
                         if(removeFile != null)
                         {
-                            context.WriteLine($"Remove file from DB {file}");
-                            _context.Files.Remove(removeFile);
-                            await _context.SaveChangesAsync();
+
+                            if (!File.Exists(Path.Combine(_targetFilePath, file)))
+                            {
+                                context.WriteLine($"Remove file {file} from DB");
+                                _context.Files.Remove(removeFile);
+                                await _context.SaveChangesAsync();
+                            }
+                            else
+                            {
+                                context.WriteLine($"Not removed file {file} from DB becouse the file exist in drive");
+                            }
+                        }
+                        else
+                        {
+                            context.WriteLine($"file {file} from DB not exist");
                         }
 
                     }
@@ -127,15 +155,53 @@ namespace FileShare.Jobs
             {
                 context.WriteLine("Job Inicializado");
                 ApplicationDbContext _context = _serviceProvider.GetService<ApplicationDbContext>();
+
+                var filesInUsers = await _context.FilesUsers
+                                                .Where(x => x.CreationDateTime <= DateTime.Now.AddMonths(12))
+                                                .Select(x => x.File)
+                                                .ToListAsync();
+
+                Guid[] guids = await _context.FilesUsers.Select(x => x.FileId).ToArrayAsync();
+
                 var filesInDb = await _context.Files
                                             .Where(x => x.CreationDateTime <= DateTime.Now.AddMonths(2))
                                             .ToListAsync();
 
-                if (filesInDb.Any())
+                if (filesInDb.Any() || filesInUsers.Any())
                 {
-                    context.WriteLine($"Total de arquivos a deletar {filesInDb.Count}");
+                    context.WriteLine($"Total de arquivos a deletar 2 Meses {filesInDb.Count}");
+                    context.WriteLine($"Total de arquivos de usuários a deletar 6 Meses {filesInUsers.Count}");
 
+
+                    context.WriteLine($"Deletando os arquivos com mais 2 Meses");
                     foreach (var file in filesInDb)
+                    {
+                        try
+                        {
+                            if (!guids.Contains(file.Id))
+                            {
+                                var fileToDelete = Path.Combine(_targetFilePath, file.StorageName);
+                                if (File.Exists(fileToDelete))
+                                {
+                                    File.Delete(fileToDelete);
+                                }
+                                _context.Files.Remove(file);
+                                await _context.SaveChangesAsync();
+                                context.WriteLine($"Delete/Remove file {file.StorageName}");
+                            }
+                            else
+                            {
+                                context.WriteLine($"File {file.StorageName} is the user");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            context.WriteLine($"Error Delete file {file.StorageName} : {ex}");
+                        }
+                    }
+
+                    context.WriteLine($"Deletando os arquivos com mais 12 Meses");
+                    foreach (var file in filesInUsers)
                     {
                         try
                         {
@@ -146,6 +212,7 @@ namespace FileShare.Jobs
                             }
                             _context.Files.Remove(file);
                             await _context.SaveChangesAsync();
+                            context.WriteLine($"Delete/Remove file {file.StorageName}");
                         }
                         catch (Exception ex)
                         {

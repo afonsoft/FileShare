@@ -216,7 +216,6 @@ namespace FileShare
                 options.SchedulePollingInterval = TimeSpan.FromSeconds(30);
                 options.ServerCheckInterval = TimeSpan.FromSeconds(30);
                 options.HeartbeatInterval = TimeSpan.FromSeconds(30);
-                options.ServerName = "AFONSOFT";
             });
         }
 

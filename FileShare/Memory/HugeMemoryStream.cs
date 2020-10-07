@@ -3,6 +3,9 @@ using System.IO;
 
 namespace FileShare.Memory
 {
+    /// <summary>
+    /// For read a large Files than 2G in memory, use a Read/Write
+    /// </summary>
     public class HugeMemoryStream : Stream
     {
         #region Fields
@@ -22,6 +25,11 @@ namespace FileShare.Memory
 
         #region Internals
 
+        /// <summary>
+        /// Return Array byte for Small file less than 2Gb
+        /// </summary>
+        /// <returns>Array byte</returns>
+        [Obsolete("Only Work for small file, a large file use ToLongArray or not use Array use Read or Write", false)]
         public byte[] ToArray()
         {
             if (Length <= int.MaxValue)
@@ -39,6 +47,11 @@ namespace FileShare.Memory
             }
         }
 
+        /// <summary>
+        /// Return matriz Array byte for Big file than 2Gb
+        /// </summary>
+        /// <returns>Array byte</returns>
+        [Obsolete("Not use Array for a lager file, use Read or Write", false)]
         public byte[][] ToLongArray()
         {
             return _streamBuffers;
@@ -102,14 +115,29 @@ namespace FileShare.Memory
 
         #region Stream
 
+        /// <summary>
+        /// Can Read Stream
+        /// </summary>
         public override bool CanRead => true;
 
+        /// <summary>
+        /// Can Seek Stream
+        /// </summary>
         public override bool CanSeek => true;
 
+        /// <summary>
+        /// Can Write Stream
+        /// </summary>
         public override bool CanWrite => true;
 
+        /// <summary>
+        /// Length 
+        /// </summary>
         public override long Length => _length;
 
+        /// <summary>
+        /// Position
+        /// </summary>
         public override long Position
         {
             get { return _position; }
@@ -124,7 +152,10 @@ namespace FileShare.Memory
             }
         }
 
-        public override void Flush() { }
+        /// <summary>
+        /// Flush - NotSupportedException
+        /// </summary>
+        public override void Flush() {  }
 
         public override int Read(byte[] buffer, int offset, int count)
         {

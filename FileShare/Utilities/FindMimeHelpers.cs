@@ -1,61 +1,64 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Winista.Mime;
 
 namespace FileShare.Utilities
 {
     public static class FindMimeHelpers
     {
+        private static MimeTypes mimeTypes => new MimeTypes();
 
         public static Dictionary<string, string> ListOfMimeType { get; set; }
 
         public static string GetMimeFromFile(string filePath)
         {
-            return new MimeTypes().GetMimeTypeFromFile(filePath).Name;
+            return mimeTypes.GetMimeTypeFromFile(filePath).Name;
         }
         public static string GetMimeFromByte(byte[] bytes)
         {
-            return new MimeTypes().GetMimeType(bytes).Name;
+            return mimeTypes.GetMimeType(bytes).Name;
         }
         public static string GetMimeFromStream(Stream stream)
         {
-            return new MimeTypes().GetMimeType(ConverteStreamToByteArray(stream)).Name;
+            return mimeTypes.GetMimeType(ConverteStreamToByteArray(stream)).Name;
         }
 
         public static string[] GetExtensionsFromFile(string filePath)
         {
-            return new MimeTypes().GetMimeTypeFromFile(filePath).Extensions;
+            return mimeTypes.GetMimeTypeFromFile(filePath).Extensions;
         }
         public static string[] GetExtensionsFromByte(byte[] bytes)
         {
-            return new MimeTypes().GetMimeType(bytes).Extensions;
+            return mimeTypes.GetMimeType(bytes).Extensions;
         }
         public static string[] GetExtensionsFromStream(Stream stream)
         {
-            return new MimeTypes().GetMimeType(ConverteStreamToByteArray(stream)).Extensions;
+            return mimeTypes.GetMimeType(ConverteStreamToByteArray(stream)).Extensions;
         }
 
         public static string GetMimeFromExtensions(string ext)
         {
-            string typeExt = "application/octet-stream";
+            string typeExt = "";
 
             foreach (KeyValuePair<string, string> kvp in ListOfMimeType)
             {
                 if (kvp.Key == ext)
                 {
                     typeExt = kvp.Value;
-                    if (string.IsNullOrEmpty(typeExt))
-                        typeExt = "application/octet-stream";
                     break;
                 }
             }
+
+            if (string.IsNullOrEmpty(typeExt))
+                typeExt = "application/octet-stream";
+
             return typeExt;
         }
 
         private static byte[] ConverteStreamToByteArray(Stream stream)
         {
             byte[] byteArray = new byte[16 * 1024];
+            stream.Position = 0;
             using (MemoryStream mStream = new MemoryStream())
             {
                 int bit;
@@ -63,6 +66,7 @@ namespace FileShare.Utilities
                 {
                     mStream.Write(byteArray, 0, bit);
                 }
+                stream.Position = 0;
                 return mStream.ToArray();
             }
         }

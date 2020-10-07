@@ -159,7 +159,7 @@ namespace FileShare.Controllers
                     return BadRequest(ModelState);
                 }
 
-                if (string.IsNullOrEmpty(trustedFileNameForDisplay) || streamedFileContent.Length <=0)
+                if (string.IsNullOrEmpty(trustedFileNameForDisplay) || streamedFileContent.Length <= 0)
                 {
                     ModelState.AddModelError("Error", "The request couldn't be processed (Error 6).");
                     return BadRequest(ModelState);
@@ -172,13 +172,15 @@ namespace FileShare.Controllers
 
                 string trustedFileNameForFileStorage = Path.GetRandomFileName();
                 fileNameFinaliy = Path.Combine(_targetFilePath, trustedFileNameForFileStorage);
+                string mimeType = FindMimeHelpers.GetMimeFromStream(streamedFileContent);
+
                 using (var targetStream = System.IO.File.Create(fileNameFinaliy))
                 {
                     streamedFileContent.CopyTo(targetStream);
                     _logger.LogInformation($"Uploaded file '{trustedFileNameForDisplay}' saved to '{_targetFilePath}' as {trustedFileNameForFileStorage}");
                 }
 
-                var model = await SaveInDb(HttpContext.Request.HttpContext.Connection.RemoteIpAddress.ToString(), fileNameFinaliy, trustedFileNameForDisplay, trustedFileNameForFileStorage, streamedFileContent.Length);
+                var model = await SaveInDb(HttpContext.Request.HttpContext.Connection.RemoteIpAddress.ToString(), fileNameFinaliy, trustedFileNameForDisplay, trustedFileNameForFileStorage, streamedFileContent.Length, mimeType);
 
                 return new OkObjectResult(model.Hash.Trim().ToLower());
             }
@@ -188,10 +190,10 @@ namespace FileShare.Controllers
                     System.IO.File.Delete(fileNameFinaliy);
 
                 ModelState.AddModelError("Error", ex.Message);
-                
+
                 if (ex.InnerException != null)
                     ModelState.AddModelError("InnerException", ex.InnerException.Message);
-                
+
                 return BadRequest(ModelState);
             }
         }
@@ -221,7 +223,7 @@ namespace FileShare.Controllers
         #endregion
 
         #region Private
-        private async Task<Models.FileModel> SaveInDb(string remoteIpAddress,string fileNameFinaliy, string fileNameForDisplay, string fileNameForFileStorage, long contentType)
+        private async Task<Models.FileModel> SaveInDb(string remoteIpAddress, string fileNameFinaliy, string fileNameForDisplay, string fileNameForFileStorage, long contentType, string mimeType)
         {
 
             var fileUploaded = new FileModel
@@ -232,13 +234,26 @@ namespace FileShare.Controllers
                 IP = remoteIpAddress,
                 Name = fileNameForDisplay,
                 StorageName = fileNameForFileStorage,
-                Type = "application/octet-stream",
+                Type = mimeType,
                 Hash = CreateHashFile(fileNameForDisplay, fileNameForFileStorage, remoteIpAddress, contentType)
             };
 
             try
             {
-                fileUploaded.Type = FindMimeHelpers.GetMimeFromFile(fileNameFinaliy);
+                if (mimeType == "application/octet-stream" || string.IsNullOrEmpty(mimeType))
+                    mimeType = FindMimeHelpers.GetMimeFromFile(fileNameFinaliy);
+
+                if (mimeType == "application/octet-stream" || string.IsNullOrEmpty(mimeType))
+                {
+                    if (FindMimeHelpers.ListOfMimeType == null || FindMimeHelpers.ListOfMimeType.Count <= 0)
+                    {
+                        FindMimeHelpers.ListOfMimeType = _context.PermittedExtension
+                                                            .Select(x => new { x.Extension, x.Description })
+                                                            .ToDictionary(x => x.Extension, x => x.Description);
+                    }
+
+                    fileUploaded.Type = FindMimeHelpers.GetMimeFromExtensions(Path.GetExtension(fileNameForDisplay).ToLowerInvariant());
+                }
             }
             catch (Exception ex)
             {
@@ -254,7 +269,7 @@ namespace FileShare.Controllers
                 fileUploaded.Type = FindMimeHelpers.GetMimeFromExtensions(Path.GetExtension(fileNameForDisplay).ToLowerInvariant());
             }
 
-            if(string.IsNullOrEmpty(fileUploaded.Type))
+            if (string.IsNullOrEmpty(fileUploaded.Type))
                 fileUploaded.Type = "application/octet-stream";
 
             //Salvar no Banco de Dados

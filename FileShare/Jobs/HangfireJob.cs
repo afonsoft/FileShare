@@ -280,6 +280,9 @@ namespace FileShare.Jobs
                                 ext = "." + ext;
 
                             ext = ext.Trim().ToLower();
+                            string description = "";
+                            if (l.Length > 1 && !string.IsNullOrEmpty(l[1]))
+                                description = l[1].ToLower().Trim();
 
                             if (!string.IsNullOrEmpty(ext))
                             {
@@ -291,29 +294,21 @@ namespace FileShare.Jobs
                                     {
                                         CreationDateTime = DateTime.Now,
                                         Id = Guid.NewGuid(),
-                                        Extension = ext
+                                        Extension = ext,
+                                        Description = description
                                     });
                                     await _context.SaveChangesAsync();
                                     totalSucess++;
                                 }
                                 else
                                 {
-                                   
-                                    if (l.Length > 1 && !string.IsNullOrEmpty(l[1]))
+                                    if (model.Description != description && !string.IsNullOrEmpty(description))
                                     {
-                                        string description = l[1].ToLower().Trim();
-                                        if (model.Description != description)
-                                        {
-                                            model.Description = description;
-                                            model.Extension = ext;
-                                            _context.PermittedExtension.Update(model);
-                                            await _context.SaveChangesAsync();
-                                            totalSucess++;
-                                        }
-                                        else
-                                        {
-                                            totalSkip++;
-                                        }
+                                        model.Description = description;
+                                        model.Extension = ext;
+                                        _context.PermittedExtension.Update(model);
+                                        await _context.SaveChangesAsync();
+                                        totalSucess++;
                                     }
                                     else
                                     {
@@ -326,7 +321,7 @@ namespace FileShare.Jobs
                                 totalSkip++;
                             }
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             totalError++;
                             context.WriteLine($"Erro na linha {line} : {ex}");

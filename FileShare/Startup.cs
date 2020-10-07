@@ -213,9 +213,10 @@ namespace FileShare
 
             services.AddHangfireServer(options => {
                 options.WorkerCount = 1;
-                options.SchedulePollingInterval = TimeSpan.FromMinutes(1);
-                options.ServerCheckInterval = TimeSpan.FromMinutes(1);
-                options.HeartbeatInterval
+                options.SchedulePollingInterval = TimeSpan.FromSeconds(30);
+                options.ServerCheckInterval = TimeSpan.FromSeconds(30);
+                options.HeartbeatInterval = TimeSpan.FromSeconds(30);
+                options.ServerName = "AFONSOFT";
             });
         }
 

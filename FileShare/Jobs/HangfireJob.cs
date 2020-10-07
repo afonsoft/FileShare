@@ -280,7 +280,7 @@ namespace FileShare.Jobs
                                 ext = "." + ext;
 
                             ext = ext.Trim().ToLower();
-                            string description = "";
+                            string description = "application/octet-stream";
                             if (l.Length > 1 && !string.IsNullOrEmpty(l[1]))
                                 description = l[1].ToLower().Trim();
 

@@ -12,8 +12,8 @@ namespace FileShare.Repository.Mapping
 
             builder.ToTable("PermittedExtension");
             builder.Property(c => c.Id).HasColumnName("Id");
-            builder.Property(c => c.Extension).HasColumnName("Extension").HasMaxLength(10);
-            builder.Property(c => c.Description).HasColumnName("Description").HasMaxLength(300);
+            builder.Property(c => c.Extension).HasColumnName("Extension").HasMaxLength(18);
+            builder.Property(c => c.Description).HasColumnName("Description").HasMaxLength(350);
             builder.Property(c => c.CreationDateTime).HasColumnName("CreationDateTime").HasDefaultValueSql("getdate()");
         }
     }

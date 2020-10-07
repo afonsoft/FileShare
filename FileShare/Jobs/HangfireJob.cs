@@ -14,7 +14,6 @@ using System.Linq;
 
 namespace FileShare.Jobs
 {
-    [DisableMultipleQueuedItemsFilter]
     public class HangfireJob : IHangfireJob
     {
         private readonly ILogger<HangfireJob> _logger;

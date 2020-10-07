@@ -25,6 +25,7 @@ using System.IO.Compression;
 using FileShare.Filters;
 using Microsoft.AspNetCore.HttpOverrides;
 using Hangfire.Dashboard;
+using Hangfire.SqlServer;
 
 namespace FileShare
 {
@@ -93,6 +94,20 @@ namespace FileShare
                 x.UseRecommendedSerializerSettings();
                 x.UseConsole();
             });
+
+            services.AddHangfire(configuration => configuration
+            .UseSimpleAssemblyNameTypeSerializer()
+            .UseRecommendedSerializerSettings()
+            .UseConsole()
+            .UseSqlServerStorage(connectionString, new SqlServerStorageOptions
+            {
+                CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+                SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+                QueuePollInterval = TimeSpan.Zero,
+                UseRecommendedIsolationLevel = true,
+                DisableGlobalLocks = true
+            }));
+                
 
             services.ConfigureApplicationCookie(options =>
             {
@@ -200,6 +215,7 @@ namespace FileShare
                 options.WorkerCount = 1;
                 options.SchedulePollingInterval = TimeSpan.FromMinutes(1);
                 options.ServerCheckInterval = TimeSpan.FromMinutes(1);
+                options.HeartbeatInterval
             });
         }
 

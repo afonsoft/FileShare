@@ -78,7 +78,7 @@ namespace FileShare
                     options.Limits.MaxRequestBodySize = 6000000000;
                     options.Limits.MinRequestBodyDataRate = new MinDataRate(100, TimeSpan.FromSeconds(10));
                     options.Limits.MinResponseDataRate = new MinDataRate(100, TimeSpan.FromSeconds(10));
-                    options.Limits.RequestHeadersTimeout =  TimeSpan.FromMinutes(5);
+                    options.Limits.RequestHeadersTimeout =  TimeSpan.FromMinutes(10);
 
                 })
                 .UseContentRoot(Directory.GetCurrentDirectory())

@@ -81,19 +81,17 @@ namespace FileShare
             services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseLazyLoadingProxies(true);
-                options.UseSqlServer(connectionString);
+                options.UseSqlServer(connectionString, options => 
+                {
+                    options.CommandTimeout(300);
+                    options.EnableRetryOnFailure(10, TimeSpan.FromSeconds(30), null);
+                });
             }, ServiceLifetime.Transient);
 
             services.AddIdentity<ApplicationIdentityUser, ApplicationIdentityRole>()
                     .AddEntityFrameworkStores<ApplicationDbContext>()
                     .AddDefaultTokenProviders();
 
-            services.AddHangfire(x =>
-            {
-                x.UseSqlServerStorage(connectionString);
-                x.UseRecommendedSerializerSettings();
-                x.UseConsole();
-            });
 
             services.AddHangfire(configuration => configuration
             .UseSimpleAssemblyNameTypeSerializer()
@@ -213,9 +211,6 @@ namespace FileShare
 
             services.AddHangfireServer(options => {
                 options.WorkerCount = 1;
-                options.SchedulePollingInterval = TimeSpan.FromSeconds(30);
-                options.ServerCheckInterval = TimeSpan.FromSeconds(30);
-                options.HeartbeatInterval = TimeSpan.FromSeconds(30);
             });
         }
 

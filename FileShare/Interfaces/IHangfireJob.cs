@@ -10,14 +10,17 @@ namespace FileShare.Interfaces
 
         [DisableMultipleQueuedItemsFilter]
         [DisableConcurrentExecution(3600)]
+        [AutomaticRetry(Attempts = 0)]
         void JobDeleteOldFiles(PerformContext context);
              
         [DisableMultipleQueuedItemsFilter]
         [DisableConcurrentExecution(3600)]
+        [AutomaticRetry(Attempts = 0)]
         void JobDeleteFilesNotExist(PerformContext context);
         
         [DisableMultipleQueuedItemsFilter]
         [DisableConcurrentExecution(3600)]
+        [AutomaticRetry(Attempts = 0)]
         void JobImportPermittedExtensions(PerformContext context);
     }
 }

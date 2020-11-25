@@ -1,43 +1,43 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <CopyRefAssembliesToPublishDirectory>false</CopyRefAssembliesToPublishDirectory>
     <UserSecretsId>a2dc9761-93b1-42c6-b66b-638ff3986a1b</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
-  <PackageReference Include="Hangfire.Core" Version="1.7.14" />
+  <PackageReference Include="Hangfire.Core" Version="1.7.18" />
   <PackageReference Include="Hangfire.SQLite.Core" Version="1.0.2" />
   <PackageReference Include="Microsoft.AspNetCore.Authentication.Core" Version="2.2.0" />
-  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.8" />
+  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.0" />
   <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
-  <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.8" />
-  <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.8" />
-  <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.8" />
+  <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.0" />
+  <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.0" />
+  <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.0" />
 	<PackageReference Include="Hangfire.AspNetCore" Version="1.7.13" />
 	<PackageReference Include="Hangfire.Console" Version="1.4.2" />
 	<PackageReference Include="Hangfire.SqlServer" Version="1.7.13" />
-	<PackageReference Include="Microsoft.Data.Sqlite.Core" Version="3.1.8" />
-	<PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.8" />
-	<PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="3.1.8" />
-	<PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="3.1.8" />
-	<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.8" />
-	<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.8" />
-	<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="3.1.8" />
+	<PackageReference Include="Microsoft.Data.Sqlite.Core" Version="5.0.0" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.0" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="5.0.0" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="5.0.0" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.0" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.0" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="5.0.0" />
 	<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Design" Version="1.1.6" />
-	<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.8" />
-	<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.8">
+	<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.0" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.0">
 		<PrivateAssets>all</PrivateAssets>
 		<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	</PackageReference>
 	<PackageReference Include="Afonsoft.Extensions" Version="2020.5.5" />
 	<PackageReference Include="Afonsoft.Logger" Version="2019.8.26" />
-	<PackageReference Include="Hangfire.AspNetCore" Version="1.7.14" />
+	<PackageReference Include="Hangfire.AspNetCore" Version="1.7.18" />
 	<PackageReference Include="Hangfire.Console" Version="1.4.2" />
-	<PackageReference Include="Hangfire.SqlServer" Version="1.7.14" />
-	<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.8" />
-	<PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.8" />
+	<PackageReference Include="Hangfire.SqlServer" Version="1.7.18" />
+	<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0" />
+	<PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
 	<PackageReference Include="sqlite" Version="3.13.0" />
 	<PackageReference Include="Winista.MimeDetect" Version="1.0.1" />
   </ItemGroup>

@@ -20,6 +20,7 @@ using FileShare.Net;
 using System.Linq;
 using Microsoft.AspNetCore.Identity;
 using FileShare.Memory;
+using FileShare.IpData;
 
 namespace FileShare.Controllers
 {
@@ -29,8 +30,9 @@ namespace FileShare.Controllers
         private readonly long _fileSizeLimit;
         private readonly ILogger<StreamingController> _logger;
         private readonly string _targetFilePath;
-        private const int BufferSize = 4096;
+        private const int BufferSize = 2048;
         private const int kbps = 1024 * 1024; //1024kbps or 1Mbps
+        private const int kbpsLogged = 1024 * 1024 * 4; //4096kbps or 4Mbps
         private readonly string[] _permittedExtensions;
         private readonly UserManager<ApplicationIdentityUser> _userManager;
         private readonly SignInManager<ApplicationIdentityUser> _signInManager;
@@ -201,12 +203,27 @@ namespace FileShare.Controllers
         #region DownloadFileStream
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public IActionResult DownloadFileStream(Models.FileModel fileModel)
+        public async Task<IActionResult> DownloadFileStream(Models.FileModel fileModel)
         {
             if (System.IO.File.Exists(fileModel.Path))
             {
                 FileStream sourceStream = new FileStream(fileModel.Path, FileMode.Open, FileAccess.Read, System.IO.FileShare.Read, BufferSize, FileOptions.Asynchronous | FileOptions.SequentialScan);
-                ThrottledStream destinationStreamStream = new ThrottledStream(sourceStream, kbps);
+                ThrottledStream destinationStreamStream = null;
+                ApplicationIdentityUser user = null;
+                if (HttpContext.User != null)
+                {
+                    user = await _userManager.GetUserAsync(HttpContext.User);
+                    if (user != null)
+                    {
+                        destinationStreamStream = new ThrottledStream(sourceStream, kbpsLogged);
+                    }
+                }
+
+                if(destinationStreamStream == null)
+                    destinationStreamStream = new ThrottledStream(sourceStream, kbps);
+
+                await LoggerDownload(user, fileModel);
+
                 FileStreamResult fileStreamResult = new FileStreamResult(destinationStreamStream, FindMimeHelpers.GetMimeFromFile(fileModel.Path));
                 fileStreamResult.FileDownloadName = fileModel.TrustedName;
                 fileStreamResult.LastModified = fileModel.UploadDT;
@@ -219,22 +236,84 @@ namespace FileShare.Controllers
                 return NotFound(ModelState);
             }
         }
+
+        private async Task LoggerDownload(ApplicationIdentityUser user, Models.FileModel fileModel)
+        {
+            string ip = HttpContext.Request.HttpContext.Connection.RemoteIpAddress.ToString();
+            Guid? userId = user?.Id;
+            var ipInfo = await new IpDataServlet(ip).GetIpInfo();
+
+            LoggerDownloadModel logDown = new LoggerDownloadModel
+            {
+                CreationDateTime = DateTime.UtcNow,
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                Size = fileModel.Size,
+                Name = fileModel.TrustedName,
+                StorageName = fileModel.UntrustedName,
+                Type = fileModel.Type, 
+                Asn = ipInfo.Asn,
+                AsnDomain = ipInfo.AsnDomain,
+                AsnName = ipInfo.AsnName,
+                AsnRoute = ipInfo.AsnRoute,
+                AsnType = ipInfo.AsnType,
+                CallingCode = ipInfo.CallingCode,
+                City = ipInfo.City,
+                ContinentCode = ipInfo.ContinentCode,
+                ContinentName = ipInfo.ContinentName,
+                CountryCode = ipInfo.CountryCode,
+                CountryName = ipInfo.CountryName,
+                Ip = ipInfo.Ip,
+                Latitude = ipInfo.Latitude,
+                Longitude = ipInfo.Longitude,
+                Organisation = ipInfo.Organisation,
+                Postal = ipInfo.Postal,
+                Region = ipInfo.Region,
+                RegionCode = ipInfo.RegionCode,
+                TimeZone = ipInfo.TimeZone,
+                Languages = ipInfo.Languages
+            };
+
+            await _context.LoggerDownload.AddAsync(logDown);
+            await _context.SaveChangesAsync();
+        }
         #endregion
 
         #region Private
         private async Task<Models.FileModel> SaveInDb(string remoteIpAddress, string fileNameFinaliy, string fileNameForDisplay, string fileNameForFileStorage, long contentType, string mimeType)
         {
+            var ipInfo = await new IpDataServlet(remoteIpAddress).GetIpInfo();
 
             var fileUploaded = new FileModel
             {
                 CreationDateTime = DateTime.UtcNow,
                 Id = Guid.NewGuid(),
                 Size = contentType,
-                IP = remoteIpAddress,
                 Name = fileNameForDisplay,
                 StorageName = fileNameForFileStorage,
                 Type = mimeType,
-                Hash = CreateHashFile(fileNameForDisplay, fileNameForFileStorage, remoteIpAddress, contentType)
+                Hash = CreateHashFile(fileNameForDisplay, fileNameForFileStorage, remoteIpAddress, contentType),
+
+                Asn = ipInfo.Asn,
+                AsnDomain = ipInfo.AsnDomain,
+                AsnName = ipInfo.AsnName,
+                AsnRoute = ipInfo.AsnRoute,
+                AsnType = ipInfo.AsnType,
+                CallingCode = ipInfo.CallingCode,
+                City = ipInfo.City,
+                ContinentCode = ipInfo.ContinentCode,
+                ContinentName = ipInfo.ContinentName,
+                CountryCode = ipInfo.CountryCode,
+                CountryName = ipInfo.CountryName,
+                Ip = ipInfo.Ip,
+                Latitude = ipInfo.Latitude,
+                Longitude = ipInfo.Longitude,
+                Organisation = ipInfo.Organisation,
+                Postal = ipInfo.Postal,
+                Region = ipInfo.Region,
+                RegionCode = ipInfo.RegionCode,
+                TimeZone = ipInfo.TimeZone,
+                Languages = ipInfo.Languages
             };
 
             try

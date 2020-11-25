@@ -18,7 +18,7 @@ namespace FileShare.Net
         /// <summary>
         /// The base stream.
         /// </summary>
-        private Stream _baseStream;
+        private readonly Stream _baseStream;
 
         /// <summary>
         /// The maximum bytes per second that can be transferred through the base stream.
@@ -152,7 +152,7 @@ namespace FileShare.Net
         public ThrottledStream(Stream baseStream)
             : this(baseStream, ThrottledStream.Infinite)
         {
-            // Nothing todo.
+            // Nothing.
         }
 
         /// <summary>

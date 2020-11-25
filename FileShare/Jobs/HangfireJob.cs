@@ -1,4 +1,5 @@
 ﻿using FileShare.Interfaces;
+using FileShare.IpData;
 using FileShare.Repository;
 using FileShare.Repository.Model;
 using FileShare.Utilities;
@@ -383,6 +384,7 @@ namespace FileShare.Jobs
                 var filesNotInported = filesInDrive.Where(x => !filesInDb.Contains(x)).ToList();
 
                 context.WriteLine($"Total de arquivos a importar {filesNotInported.Count}");
+                var ipInfo = await new IpDataServlet().GetIpInfo();
 
                 foreach (var file in filesNotInported)
                 {
@@ -399,11 +401,30 @@ namespace FileShare.Jobs
                                 CreationDateTime = DateTime.UtcNow,
                                 Id = Guid.NewGuid(),
                                 Size = info.Length,
-                                IP = "127.0.0.1",
                                 Name = file,
                                 StorageName = file,
                                 Type = contentType,
-                                Hash = CreateHashFile(file, file, "127.0.0.1", info.Length)
+                                Hash = CreateHashFile(file, file, ipInfo.Ip, info.Length),
+                                Asn = ipInfo.Asn,
+                                AsnDomain = ipInfo.AsnDomain,
+                                AsnName = ipInfo.AsnName,
+                                AsnRoute = ipInfo.AsnRoute,
+                                AsnType = ipInfo.AsnType,
+                                CallingCode = ipInfo.CallingCode,
+                                City = ipInfo.City,
+                                ContinentCode = ipInfo.ContinentCode,
+                                ContinentName = ipInfo.ContinentName,
+                                CountryCode = ipInfo.CountryCode,
+                                CountryName = ipInfo.CountryName,
+                                Ip = ipInfo.Ip,
+                                Latitude = ipInfo.Latitude,
+                                Longitude = ipInfo.Longitude,
+                                Organisation = ipInfo.Organisation,
+                                Postal = ipInfo.Postal,
+                                Region = ipInfo.Region,
+                                RegionCode = ipInfo.RegionCode,
+                                TimeZone = ipInfo.TimeZone,
+                                Languages = ipInfo.Languages
                             };
 
                             _context.Files.Add(model);

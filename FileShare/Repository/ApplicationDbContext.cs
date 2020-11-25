@@ -26,6 +26,7 @@ namespace FileShare.Repository
             builder.ApplyConfiguration(new FilesMap());
             builder.ApplyConfiguration(new ExtensionPermittedMap());
             builder.ApplyConfiguration(new FileUserMap());
+            builder.ApplyConfiguration(new LoggerDownloadMap());
 
             Seed(builder);
             base.OnModelCreating(builder);
@@ -49,6 +50,7 @@ namespace FileShare.Repository
         public DbSet<FileModel> Files { get; set; }
         public DbSet<ExtensionPermittedModel> PermittedExtension { get; set; }
         public DbSet<FileUserModel> FilesUsers { get; set; }
+        public DbSet<LoggerDownloadModel> LoggerDownload { get; set; }
     }
 
     public class ApplicationIdentityUser : IdentityUser<Guid>

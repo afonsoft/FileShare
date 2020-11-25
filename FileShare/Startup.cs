@@ -26,6 +26,7 @@ using FileShare.Filters;
 using Microsoft.AspNetCore.HttpOverrides;
 using Hangfire.Dashboard;
 using Hangfire.SqlServer;
+using Hangfire.Heartbeat;
 
 namespace FileShare
 {
@@ -97,10 +98,11 @@ namespace FileShare
             .UseSimpleAssemblyNameTypeSerializer()
             .UseRecommendedSerializerSettings()
             .UseConsole()
+            .UseHeartbeatPage(checkInterval: TimeSpan.FromSeconds(1))
             .UseSqlServerStorage(connectionString, new SqlServerStorageOptions
             {
-                CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
-                SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+                CommandBatchMaxTimeout = TimeSpan.FromMinutes(30),
+                SlidingInvisibilityTimeout = TimeSpan.FromMinutes(720),
                 QueuePollInterval = TimeSpan.Zero,
                 UseRecommendedIsolationLevel = true,
                 DisableGlobalLocks = true

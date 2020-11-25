@@ -2,6 +2,7 @@
 {
     public class IpDataModel
     {
+        public string Error { get; set; }
         public string CallingCode { get; set; }
 
         public string Postal { get; set; }

@@ -11,7 +11,7 @@ namespace FileShare.IpData
     {
         private readonly IpDataClient client;
         private readonly string ip;
-        private const string key = "";
+        private const string key = "test";
         private readonly ILogger<IpDataServlet> _logger;
         private IpInfo ipInfo;
 
@@ -63,13 +63,14 @@ namespace FileShare.IpData
                     Region = ipInfo.Region,
                     RegionCode = ipInfo.RegionCode,
                     TimeZone = ipInfo.TimeZone.Name,
-                    Languages = ipInfo.Languages[0].Name
+                    Languages = ipInfo.Languages[0].Name,
+                    Error = ""
                 };
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Erro ao IpDataClient : {ex.Message}");
-                return new IpDataModel { Ip = ip };
+                return new IpDataModel { Ip = ip, Error = ex.Message };
             }
         }
     }

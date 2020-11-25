@@ -53,6 +53,7 @@ namespace FileShare.Repository.Model
         public string AsnType { get; set; }
         public string Languages { get; set; }
         public string TimeZone { get; set; }
+        public string Error { get; set; }
 
     }
 }

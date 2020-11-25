@@ -271,7 +271,8 @@ namespace FileShare.Controllers
                 Region = ipInfo.Region,
                 RegionCode = ipInfo.RegionCode,
                 TimeZone = ipInfo.TimeZone,
-                Languages = ipInfo.Languages
+                Languages = ipInfo.Languages,
+                Error = ipInfo.Error
             };
 
             await _context.LoggerDownload.AddAsync(logDown);

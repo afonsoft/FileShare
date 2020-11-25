@@ -38,6 +38,7 @@ namespace FileShare.Repository.Mapping
             builder.Property(c => c.AsnType).HasColumnName("AsnType").HasMaxLength(400);
             builder.Property(c => c.Languages).HasColumnName("Languages").HasMaxLength(400);
             builder.Property(c => c.TimeZone).HasColumnName("TimeZone").HasMaxLength(400);
+            builder.Property(c => c.Error).HasColumnName("Error").HasMaxLength(4000);
         }
     }
 }

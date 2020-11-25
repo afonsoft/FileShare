@@ -212,7 +212,9 @@ namespace FileShare
             services.Configure<GzipCompressionProviderOptions>(options => { options.Level = CompressionLevel.Fastest; });
 
             services.AddHangfireServer(options => {
-                options.WorkerCount = 1;
+                options.WorkerCount = 8;
+                options.HeartbeatInterval = TimeSpan.FromSeconds(5);
+                options.ServerCheckInterval = TimeSpan.FromSeconds(5);
             });
         }
 

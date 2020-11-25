@@ -98,7 +98,7 @@ namespace FileShare
             .UseSimpleAssemblyNameTypeSerializer()
             .UseRecommendedSerializerSettings()
             .UseConsole()
-            .UseHeartbeatPage(checkInterval: TimeSpan.FromSeconds(1))
+            .UseHeartbeatPage(checkInterval: TimeSpan.FromSeconds(5))
             .UseSqlServerStorage(connectionString, new SqlServerStorageOptions
             {
                 CommandBatchMaxTimeout = TimeSpan.FromMinutes(30),

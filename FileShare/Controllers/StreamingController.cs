@@ -19,7 +19,6 @@ using System.Text;
 using FileShare.Net;
 using System.Linq;
 using Microsoft.AspNetCore.Identity;
-using FileShare.Filters;
 using FileShare.Memory;
 
 namespace FileShare.Controllers
@@ -228,7 +227,7 @@ namespace FileShare.Controllers
 
             var fileUploaded = new FileModel
             {
-                CreationDateTime = DateTime.Now,
+                CreationDateTime = DateTime.UtcNow,
                 Id = Guid.NewGuid(),
                 Size = contentType,
                 IP = remoteIpAddress,

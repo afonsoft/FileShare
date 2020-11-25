@@ -1,7 +1,7 @@
-﻿using FileShare.Filters;
-using FileShare.Interfaces;
+﻿using FileShare.Interfaces;
 using FileShare.Repository;
 using FileShare.Repository.Model;
+using FileShare.Utilities;
 using Hangfire;
 using Hangfire.Console;
 using Hangfire.Server;
@@ -20,22 +20,27 @@ namespace FileShare.Jobs
         private readonly string _targetFilePath;
         private readonly IServiceProvider _serviceProvider;
 
-        private static bool isInProcessJobDeleteFilesNotExist = false;
-        private static bool isInProcessJobDeleteOldFiles = false;
-        private static bool isInProcessJobImportPermittedExtensions = false;
+        private static bool isInProcessJobDeleteFilesNotExist { get; set; } = false;
+        private static bool isInProcessJobDeleteOldFiles { get; set; } = false;
+        private static bool isInProcessJobImportPermittedExtensions { get; set; } = false;
+        private static bool isInProcessJobImportNoewFiles { get; set; } = false;
+
+        private readonly string[] _permittedExtensions;
 
         public HangfireJob(ILogger<HangfireJob> logger, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
             _logger = logger;
             _targetFilePath = Path.Combine(env.WebRootPath, "FILES");
             _serviceProvider = serviceProvider;
+            _permittedExtensions = _serviceProvider.GetService<ApplicationDbContext>().PermittedExtension.Select(x => x.Extension).ToArray();
         }
         public void Initialize()
         {
-            
-            RecurringJob.AddOrUpdate<IHangfireJob>("DelOldFiles", x => x.JobDeleteOldFiles(null), Cron.HourInterval(12), TimeZoneInfo.Local);
-            RecurringJob.AddOrUpdate<IHangfireJob>("DelFilesNotExist", x => x.JobDeleteFilesNotExist(null), Cron.HourInterval(8), TimeZoneInfo.Local);
-            RecurringJob.AddOrUpdate<IHangfireJob>("PermittedExtensions", x => x.JobImportPermittedExtensions(null), Cron.HourInterval(6), TimeZoneInfo.Local);
+
+            RecurringJob.AddOrUpdate<IHangfireJob>("DelOldFiles", x => x.JobDeleteOldFiles(null), Cron.Daily, TimeZoneInfo.Utc);
+            RecurringJob.AddOrUpdate<IHangfireJob>("DelFilesNotExist", x => x.JobDeleteFilesNotExist(null), Cron.Daily, TimeZoneInfo.Utc);
+            RecurringJob.AddOrUpdate<IHangfireJob>("PermittedExtensions", x => x.JobImportPermittedExtensions(null), Cron.Daily, TimeZoneInfo.Utc);
+            RecurringJob.AddOrUpdate<IHangfireJob>("ImportNewFiles", x => x.JobImportNewFiles(null), Cron.Daily, TimeZoneInfo.Utc);
         }
 
         public async void JobDeleteFilesNotExist(PerformContext context)
@@ -51,30 +56,29 @@ namespace FileShare.Jobs
                 isInProcessJobDeleteFilesNotExist = true;
                 context.WriteLine("Job Inicializado");
                 ApplicationDbContext _context = _serviceProvider.GetService<ApplicationDbContext>();
-                
+
                 var filesInDb = await _context.Files.Select(x => x.StorageName)
                                             .ToListAsync();
 
                 var filesInDrive = Directory.GetFiles(_targetFilePath)
                                             .Where(x => !x.Contains("index.htm")
-                                                     && !x.Contains("Extensions.txt"))
+                                                     && !x.Contains("Extensions.txt")
+                                                     && !_permittedExtensions.Contains(Path.GetExtension(x).ToLowerInvariant()))
                                             .Select(x => x.Split("\\").Last())
                                             .ToList();
 
                 var filesNotExistInDb = filesInDb.Where(x => !filesInDrive.Contains(x)).ToList();
-                var filesNotExistInDrive = filesInDrive.Where(x => !filesInDb.Contains(x) 
-                                                                && !x.Contains("index.htm")
-                                                                && !x.Contains("Extensions.txt")).ToList();
+                var filesNotExistInDrive = filesInDrive.Where(x => !filesInDb.Contains(x)).ToList();
 
                 context.WriteLine($"Total de registros a deletar {filesNotExistInDb.Count}");
                 context.WriteLine($"Total de arquivos a deletar {filesNotExistInDrive.Count}");
 
-                foreach(var file in filesNotExistInDrive)
+                foreach (var file in filesNotExistInDrive)
                 {
                     try
                     {
                         var fileToDelete = Path.Combine(_targetFilePath, file);
-                        if (File.Exists(fileToDelete) && !fileToDelete.Contains("index.htm") && !fileToDelete.Contains("Extensions.txt"))
+                        if (File.Exists(fileToDelete))
                         {
                             if (!filesInDb.Any(x => x.Contains(file)))
                             {
@@ -105,7 +109,7 @@ namespace FileShare.Jobs
                                             .Where(x => x.StorageName == file)
                                             .FirstOrDefaultAsync();
 
-                        if(removeFile != null)
+                        if (removeFile != null)
                         {
 
                             if (!File.Exists(Path.Combine(_targetFilePath, file)))
@@ -144,7 +148,7 @@ namespace FileShare.Jobs
             }
         }
 
-  
+
         public async void JobDeleteOldFiles(PerformContext context)
         {
             if (isInProcessJobDeleteOldFiles)
@@ -160,21 +164,20 @@ namespace FileShare.Jobs
                 ApplicationDbContext _context = _serviceProvider.GetService<ApplicationDbContext>();
 
                 var filesInUsers = await _context.FilesUsers
-                                                .Where(x => x.CreationDateTime <= DateTime.Now.AddMonths(12))
+                                                .Where(x => x.CreationDateTime <= DateTime.Now.AddYears(-2))
                                                 .Select(x => x.File)
                                                 .ToListAsync();
 
                 Guid[] guids = await _context.FilesUsers.Select(x => x.FileId).ToArrayAsync();
 
                 var filesInDb = await _context.Files
-                                            .Where(x => x.CreationDateTime <= DateTime.Now.AddMonths(2))
+                                            .Where(x => x.CreationDateTime <= DateTime.Now.AddMonths(-6))
                                             .ToListAsync();
 
                 if (filesInDb.Any() || filesInUsers.Any())
                 {
                     context.WriteLine($"Total de arquivos a deletar 2 Meses {filesInDb.Count}");
                     context.WriteLine($"Total de arquivos de usuários a deletar 6 Meses {filesInUsers.Count}");
-
 
                     context.WriteLine($"Deletando os arquivos com mais 2 Meses");
                     foreach (var file in filesInDb)
@@ -241,7 +244,7 @@ namespace FileShare.Jobs
             }
         }
 
-   
+
         public async void JobImportPermittedExtensions(PerformContext context)
         {
             if (isInProcessJobImportPermittedExtensions)
@@ -266,7 +269,7 @@ namespace FileShare.Jobs
                 {
                     string[] lines = File.ReadAllLines(fileExtensions);
 
-                  var progressBar = context.WriteProgressBar("Processo", 0);
+                    var progressBar = context.WriteProgressBar("Processo", 0);
 
                     foreach (string line in lines)
                     {
@@ -291,7 +294,7 @@ namespace FileShare.Jobs
                                 {
                                     await _context.PermittedExtension.AddAsync(new ExtensionPermittedModel()
                                     {
-                                        CreationDateTime = DateTime.Now,
+                                        CreationDateTime = DateTime.UtcNow,
                                         Id = Guid.NewGuid(),
                                         Extension = ext,
                                         Description = description
@@ -350,5 +353,89 @@ namespace FileShare.Jobs
                 isInProcessJobImportPermittedExtensions = false;
             }
         }
+
+        public async void JobImportNewFiles(PerformContext context)
+        {
+            if (isInProcessJobImportNoewFiles)
+            {
+                context.WriteLine("Job já em processamento.");
+                return;
+            }
+
+            try
+            {
+
+                isInProcessJobImportNoewFiles = true;
+                context.WriteLine("Job Inicializado");
+
+                ApplicationDbContext _context = _serviceProvider.GetService<ApplicationDbContext>();
+
+                var filesInDrive = Directory.GetFiles(_targetFilePath)
+                                             .Where(x => !x.Contains("index.htm")
+                                                      && !x.Contains("Extensions.txt")
+                                                      && _permittedExtensions.Contains(Path.GetExtension(x).ToLowerInvariant()))
+                                             .Select(x => x.Split("\\").Last())
+                                             .ToList();
+
+                var filesInDb = await _context.Files.Select(x => x.StorageName)
+                                            .ToListAsync();
+
+                var filesNotInported = filesInDrive.Where(x => !filesInDb.Contains(x)).ToList();
+
+                context.WriteLine($"Total de arquivos a importar {filesNotInported.Count}");
+
+                foreach (var file in filesNotInported)
+                {
+                    try
+                    {
+                        var fileWithPath = Path.Combine(_targetFilePath, file);
+
+                        if (File.Exists(fileWithPath))
+                        {
+                            FileInfo info = new FileInfo(fileWithPath);
+                            var contentType = FindMimeHelpers.GetMimeFromFile(fileWithPath);
+                            FileModel model = new FileModel
+                            {
+                                CreationDateTime = DateTime.UtcNow,
+                                Id = Guid.NewGuid(),
+                                Size = info.Length,
+                                IP = "127.0.0.1",
+                                Name = file,
+                                StorageName = file,
+                                Type = contentType,
+                                Hash = CreateHashFile(file, file, "127.0.0.1", info.Length)
+                            };
+
+                            _context.Files.Add(model);
+                            await _context.SaveChangesAsync();
+                        }
+                        else
+                        {
+                            context.WriteLine($"Arquivo invalido {fileWithPath}");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        context.WriteLine($"Erro no Arquivo {file} : {ex}");
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                context.WriteLine($"Erro no Job : {ex}");
+                _logger.LogError(ex, $"Error on Job JobImportNewFiles {context.BackgroundJob.Id}-{ex}");
+            }
+            finally
+            {
+                isInProcessJobImportNoewFiles = false;
+            }
+        }
+
+        private string CreateHashFile(string fileNameForDisplay, string fileNameForFileStorage, string remoteIp, long contentType)
+        {
+            return EncryptorHelpers.MD5Hash($"{fileNameForDisplay}|{fileNameForFileStorage}|{remoteIp}|{contentType}|{Guid.NewGuid()}");
+        }
+
     }
 }

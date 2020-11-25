@@ -21,14 +21,14 @@ namespace FileShare.Repository
             }
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            modelBuilder.ApplyConfiguration(new FilesMap());
-            modelBuilder.ApplyConfiguration(new ExtensionPermittedMap());
-            modelBuilder.ApplyConfiguration(new FileUserMap());
+            builder.ApplyConfiguration(new FilesMap());
+            builder.ApplyConfiguration(new ExtensionPermittedMap());
+            builder.ApplyConfiguration(new FileUserMap());
 
-            Seed(modelBuilder);
-            base.OnModelCreating(modelBuilder);
+            Seed(builder);
+            base.OnModelCreating(builder);
         }
 
         private void Seed(ModelBuilder modelBuilder)
@@ -40,7 +40,7 @@ namespace FileShare.Repository
                    Id = Guid.NewGuid(),
                    Extension = ".zip",
                    Description = "application/zip",
-                   CreationDateTime = DateTime.Now,
+                   CreationDateTime = DateTime.UtcNow,
                }
             );
         }

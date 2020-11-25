@@ -22,5 +22,10 @@ namespace FileShare.Interfaces
         [DisableConcurrentExecution(3600)]
         [AutomaticRetry(Attempts = 0)]
         void JobImportPermittedExtensions(PerformContext context);
+
+        [DisableMultipleQueuedItemsFilter]
+        [DisableConcurrentExecution(3600)]
+        [AutomaticRetry(Attempts = 0)]
+        void JobImportNewFiles(PerformContext context);
     }
 }

@@ -11,7 +11,7 @@ namespace FileShare.IpData
     {
         private readonly IpDataClient client;
         private readonly string ip;
-        private const string key = "test";
+        private const string key = "d39b8f6602b4476864ffc57e8c05fa5cd386818545c803a014f1fb44";
         private readonly ILogger<IpDataServlet> _logger;
         private IpInfo ipInfo;
 
@@ -38,9 +38,9 @@ namespace FileShare.IpData
             try
             {
                 if (!string.IsNullOrEmpty(ip))
-                    ipInfo = await client.Lookup(ip, new System.Globalization.CultureInfo("pt-BR"));
+                    ipInfo = await client.Lookup(ip);
                 else
-                    ipInfo = await client.Lookup(new System.Globalization.CultureInfo("pt-BR"));
+                    ipInfo = await client.Lookup();
 
                 return new IpDataModel
                 {

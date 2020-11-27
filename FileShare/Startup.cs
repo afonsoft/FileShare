@@ -57,10 +57,16 @@ namespace FileShare
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.Configure<IISOptions>(o =>
+            services.Configure<IISOptions>(options =>
             {
-                o.ForwardClientCertificate = true;
+                options.ForwardClientCertificate = true;
             });
+
+            services.Configure<IISServerOptions>(options =>
+            {
+                options.MaxRequestBodySize = 6000000000;
+            });
+
 
             services.AddAfonsoftLogging();
             services.AddMemoryCache();
@@ -184,11 +190,6 @@ namespace FileShare
                 options.MultipartBodyLengthLimit = 6000000000;
                 options.MultipartBoundaryLengthLimit = 512;
                 options.MultipartHeadersLengthLimit = int.MaxValue;
-            });
-
-            services.Configure<IISServerOptions>(options =>
-            {
-                options.MaxRequestBodySize = 6000000000;
             });
 
             services.AddAntiforgery(options =>

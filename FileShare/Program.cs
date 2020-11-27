@@ -64,18 +64,21 @@ namespace FileShare
         {
             return new WebHostBuilder()
                 .CaptureStartupErrors(true)
+                .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseKestrel(options => 
                 { 
                     options.AddServerHeader = false;
                     options.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(120);
-                    
                     options.Limits.MaxRequestBodySize = 6000000000;
                     options.Limits.MinRequestBodyDataRate = new MinDataRate(100, TimeSpan.FromSeconds(10));
                     options.Limits.MinResponseDataRate = new MinDataRate(100, TimeSpan.FromSeconds(10));
-                    options.Limits.RequestHeadersTimeout =  TimeSpan.FromMinutes(10);
+                    options.Limits.RequestHeadersTimeout =  TimeSpan.FromMinutes(120);
+                    options.Limits.Http2.HeaderTableSize = 4096;
+                    options.Limits.Http2.MaxStreamsPerConnection = 255;
+                    options.Limits.Http2.MaxFrameSize = 16777215;
+                    options.Limits.Http2.MaxRequestHeaderFieldSize = 16384;
 
                 })
-                .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIIS()
                 .UseIISIntegration()
                 .UseStartup<Startup>();

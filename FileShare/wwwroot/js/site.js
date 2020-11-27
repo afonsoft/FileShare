@@ -93,7 +93,7 @@ function UploadSubimit() {
         contentType: false,
         processData: false,
         enctype: 'multipart/form-data',
-        timeout: 5 * 60 * 1000,
+        timeout: 120 * 60 * 1000, //2 hour timeout
         xhr: function () {
             //upload Progress
             var xhr = $.ajaxSettings.xhr();

@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 
 namespace FileShare.Filters
 {
-
     public class GenerateAntiforgeryTokenAttribute : ResultFilterAttribute
     {
         public override void OnResultExecuting(ResultExecutingContext context)
@@ -13,11 +12,13 @@ namespace FileShare.Filters
             CreateToken(context);
             base.OnResultExecuting(context);
         }
+
         public override Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
         {
             CreateToken(context);
             return base.OnResultExecutionAsync(context, next);
         }
+
         public override void OnResultExecuted(ResultExecutedContext context)
         {
             base.OnResultExecuted(context);

@@ -1,26 +1,26 @@
-﻿using System.IO;
-using System.Net;
-using System.Threading.Tasks;
+﻿using FileShare.Attributes;
+using FileShare.IpData;
+using FileShare.Memory;
+using FileShare.Net;
+using FileShare.Repository;
+using FileShare.Repository.Model;
+using FileShare.Utilities;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
-using FileShare.Attributes;
-using FileShare.Utilities;
-using FileShare.Repository;
-using Microsoft.AspNetCore.Hosting;
 using System;
-using FileShare.Repository.Model;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Globalization;
-using System.Text;
-using FileShare.Net;
+using System.IO;
 using System.Linq;
-using Microsoft.AspNetCore.Identity;
-using FileShare.Memory;
-using FileShare.IpData;
+using System.Net;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace FileShare.Controllers
 {
@@ -37,7 +37,7 @@ namespace FileShare.Controllers
         private readonly UserManager<ApplicationIdentityUser> _userManager;
         private readonly SignInManager<ApplicationIdentityUser> _signInManager;
 
-        // Get the default form options so that we can use them to set the default 
+        // Get the default form options so that we can use them to set the default
         // limits for request body data.
         private static readonly FormOptions _defaultFormOptions = new FormOptions();
 
@@ -53,6 +53,7 @@ namespace FileShare.Controllers
         }
 
         #region UploadFileStream
+
         [HttpPost]
         [DisableFormValueModelBinding]
         public async Task<IActionResult> UploadFileStream()
@@ -121,7 +122,6 @@ namespace FileShare.Controllers
                                 bufferSize: 1024,
                                 leaveOpen: true))
                             {
-
                                 var value = await streamReader.ReadToEndAsync();
 
                                 if (string.Equals(value, "undefined", StringComparison.OrdinalIgnoreCase))
@@ -198,9 +198,11 @@ namespace FileShare.Controllers
                 return BadRequest(ModelState);
             }
         }
-        #endregion
+
+        #endregion UploadFileStream
 
         #region DownloadFileStream
+
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> DownloadFileStream(Models.FileModel fileModel)
@@ -219,7 +221,7 @@ namespace FileShare.Controllers
                     }
                 }
 
-                if(destinationStreamStream == null)
+                if (destinationStreamStream == null)
                     destinationStreamStream = new ThrottledStream(sourceStream, kbps);
 
                 await LoggerDownload(user, fileModel);
@@ -251,7 +253,7 @@ namespace FileShare.Controllers
                 Size = fileModel.Size,
                 Name = fileModel.TrustedName,
                 StorageName = fileModel.UntrustedName,
-                Type = fileModel.Type, 
+                Type = fileModel.Type,
                 Asn = ipInfo.Asn,
                 AsnDomain = ipInfo.AsnDomain,
                 AsnName = ipInfo.AsnName,
@@ -278,9 +280,11 @@ namespace FileShare.Controllers
             await _context.LoggerDownload.AddAsync(logDown);
             await _context.SaveChangesAsync();
         }
-        #endregion
+
+        #endregion DownloadFileStream
 
         #region Private
+
         private async Task<Models.FileModel> SaveInDb(string remoteIpAddress, string fileNameFinaliy, string fileNameForDisplay, string fileNameForFileStorage, long contentType, string mimeType)
         {
             var ipInfo = await new IpDataServlet(remoteIpAddress).GetIpInfo();
@@ -399,7 +403,7 @@ namespace FileShare.Controllers
             var hasMediaTypeHeader =
                 MediaTypeHeaderValue.TryParse(section.ContentType, out var mediaType);
 
-            // UTF-7 is insecure and shouldn't be honored. UTF-8 succeeds in 
+            // UTF-7 is insecure and shouldn't be honored. UTF-8 succeeds in
             // most cases.
             if (!hasMediaTypeHeader || Encoding.UTF7.Equals(mediaType.Encoding))
             {
@@ -409,7 +413,7 @@ namespace FileShare.Controllers
             return mediaType.Encoding;
         }
 
-        #endregion
+        #endregion Private
     }
 
     public class FormData

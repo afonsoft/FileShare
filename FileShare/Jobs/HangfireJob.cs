@@ -35,9 +35,9 @@ namespace FileShare.Jobs
             _serviceProvider = serviceProvider;
             _permittedExtensions = _serviceProvider.GetService<ApplicationDbContext>().PermittedExtension.Select(x => x.Extension).ToArray();
         }
+
         public void Initialize()
         {
-
             RecurringJob.AddOrUpdate<IHangfireJob>("DelOldFiles", x => x.JobDeleteOldFiles(null), Cron.Daily, TimeZoneInfo.Utc);
             RecurringJob.AddOrUpdate<IHangfireJob>("DelFilesNotExist", x => x.JobDeleteFilesNotExist(null), Cron.Daily, TimeZoneInfo.Utc);
             RecurringJob.AddOrUpdate<IHangfireJob>("PermittedExtensions", x => x.JobImportPermittedExtensions(null), Cron.Daily, TimeZoneInfo.Utc);
@@ -112,7 +112,6 @@ namespace FileShare.Jobs
 
                         if (removeFile != null)
                         {
-
                             if (!File.Exists(Path.Combine(_targetFilePath, file)))
                             {
                                 context.WriteLine($"Remove file {file} from DB");
@@ -128,7 +127,6 @@ namespace FileShare.Jobs
                         {
                             context.WriteLine($"file {file} from DB not exist");
                         }
-
                     }
                     catch (Exception ex)
                     {
@@ -148,7 +146,6 @@ namespace FileShare.Jobs
                 isInProcessJobDeleteFilesNotExist = false;
             }
         }
-
 
         public async void JobDeleteOldFiles(PerformContext context)
         {
@@ -245,7 +242,6 @@ namespace FileShare.Jobs
             }
         }
 
-
         public async void JobImportPermittedExtensions(PerformContext context)
         {
             if (isInProcessJobImportPermittedExtensions)
@@ -341,7 +337,6 @@ namespace FileShare.Jobs
                     context.WriteLine("Não tem o arquivo com as extensões para processar");
                 }
 
-
                 context.WriteLine("Job Finalizado");
             }
             catch (Exception ex)
@@ -365,7 +360,6 @@ namespace FileShare.Jobs
 
             try
             {
-
                 isInProcessJobImportNoewFiles = true;
                 context.WriteLine("Job Inicializado");
 
@@ -440,7 +434,6 @@ namespace FileShare.Jobs
                         context.WriteLine($"Erro no Arquivo {file} : {ex}");
                     }
                 }
-
             }
             catch (Exception ex)
             {
@@ -457,6 +450,5 @@ namespace FileShare.Jobs
         {
             return EncryptorHelpers.MD5Hash($"{fileNameForDisplay}|{fileNameForFileStorage}|{remoteIp}|{contentType}|{Guid.NewGuid()}");
         }
-
     }
 }

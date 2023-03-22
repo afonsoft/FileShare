@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Net;
 using FileShare.Repository;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -8,16 +9,19 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace FileShare
 {
-    public class Program
+    public static class Program
     {
         public static async System.Threading.Tasks.Task Main(string[] args)
         {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls13 | SecurityProtocolType.Tls12;
+            ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
+            ServicePointManager.Expect100Continue = true;
+
             var host = CreateWebHostBuilder(args).Build();
             using (var scope = host.Services.CreateScope())
             {
                 var userManager = scope.ServiceProvider.GetService<UserManager<ApplicationIdentityUser>>();
                 var roleManager = scope.ServiceProvider.GetService<RoleManager<ApplicationIdentityRole>>();
-
 
                 // Create the role if it doesn't already exist
                 if (!await roleManager.RoleExistsAsync("Admin"))
@@ -65,19 +69,18 @@ namespace FileShare
             return new WebHostBuilder()
                 .CaptureStartupErrors(true)
                 .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseKestrel(options => 
-                { 
+                .UseKestrel(options =>
+                {
                     options.AddServerHeader = false;
                     options.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(120);
                     options.Limits.MaxRequestBodySize = 6000000000;
                     options.Limits.MinRequestBodyDataRate = new MinDataRate(100, TimeSpan.FromSeconds(10));
                     options.Limits.MinResponseDataRate = new MinDataRate(100, TimeSpan.FromSeconds(10));
-                    options.Limits.RequestHeadersTimeout =  TimeSpan.FromMinutes(120);
+                    options.Limits.RequestHeadersTimeout = TimeSpan.FromMinutes(120);
                     options.Limits.Http2.HeaderTableSize = 4096;
                     options.Limits.Http2.MaxStreamsPerConnection = 255;
                     options.Limits.Http2.MaxFrameSize = 16777215;
                     options.Limits.Http2.MaxRequestHeaderFieldSize = 16384;
-
                 })
                 .UseIIS()
                 .UseIISIntegration()

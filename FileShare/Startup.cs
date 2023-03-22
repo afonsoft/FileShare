@@ -1,32 +1,32 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Microsoft.EntityFrameworkCore;
 using Afonsoft.Logger;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Http.Features;
+using FileShare.Extensions;
+using FileShare.Filters;
+using FileShare.Interfaces;
+using FileShare.Jobs;
+using FileShare.Repository;
 using Hangfire;
 using Hangfire.Console;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using FileShare.Extensions;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using FileShare.Interfaces;
-using Microsoft.AspNetCore.DataProtection;
-using FileShare.Repository;
-using FileShare.Jobs;
-using Microsoft.AspNetCore.ResponseCompression;
-using System.IO.Compression;
-using FileShare.Filters;
-using Microsoft.AspNetCore.HttpOverrides;
 using Hangfire.Dashboard;
-using Hangfire.SqlServer;
 using Hangfire.Heartbeat;
+using Hangfire.SqlServer;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.IdentityModel.Tokens;
+using System;
+using System.IO.Compression;
+using System.Text;
 
 namespace FileShare
 {
@@ -35,7 +35,7 @@ namespace FileShare
         private readonly IConfigurationRoot _appConfiguration;
         private readonly IWebHostEnvironment _hostingEnvironment;
 
-           public Startup(IWebHostEnvironment env)
+        public Startup(IWebHostEnvironment env)
         {
             _hostingEnvironment = env;
             _appConfiguration = env.GetAppConfiguration();
@@ -67,7 +67,6 @@ namespace FileShare
                 options.MaxRequestBodySize = 6000000000;
             });
 
-
             services.AddAfonsoftLogging();
             services.AddMemoryCache();
             services.AddDistributedMemoryCache();
@@ -88,7 +87,7 @@ namespace FileShare
             services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseLazyLoadingProxies(true);
-                options.UseSqlServer(connectionString, options => 
+                options.UseSqlServer(connectionString, options =>
                 {
                     options.CommandTimeout(300);
                     options.EnableRetryOnFailure(10, TimeSpan.FromSeconds(30), null);
@@ -99,7 +98,6 @@ namespace FileShare
                     .AddEntityFrameworkStores<ApplicationDbContext>()
                     .AddDefaultTokenProviders();
 
-
             services.AddHangfire(configuration => configuration
             .UseSimpleAssemblyNameTypeSerializer()
             .UseRecommendedSerializerSettings()
@@ -107,13 +105,9 @@ namespace FileShare
             .UseHeartbeatPage(checkInterval: TimeSpan.FromSeconds(5))
             .UseSqlServerStorage(connectionString, new SqlServerStorageOptions
             {
-                CommandBatchMaxTimeout = TimeSpan.FromMinutes(30),
-                SlidingInvisibilityTimeout = TimeSpan.FromMinutes(720),
-                QueuePollInterval = TimeSpan.Zero,
                 UseRecommendedIsolationLevel = true,
                 DisableGlobalLocks = true
             }));
-                
 
             services.ConfigureApplicationCookie(options =>
             {
@@ -201,7 +195,6 @@ namespace FileShare
 
             services.TryAddSingleton<IHangfireJob, HangfireJob>();
 
-
             services.AddResponseCompression(options =>
             {
                 options.Providers.Add<GzipCompressionProvider>();
@@ -212,8 +205,9 @@ namespace FileShare
             services.Configure<BrotliCompressionProviderOptions>(options => { options.Level = CompressionLevel.Fastest; });
             services.Configure<GzipCompressionProviderOptions>(options => { options.Level = CompressionLevel.Fastest; });
 
-            services.AddHangfireServer(options => {
-                options.WorkerCount = 8;
+            services.AddHangfireServer(options =>
+            {
+                options.WorkerCount = 2;
                 options.HeartbeatInterval = TimeSpan.FromSeconds(5);
                 options.ServerCheckInterval = TimeSpan.FromSeconds(5);
             });

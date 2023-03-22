@@ -9,18 +9,19 @@ namespace FileShare.Repository.Model
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         public Guid Id { get; set; }
+
         public string Name { get; set; }
         public string StorageName { get; set; }
         public string Type { get; set; }
         public long Size { get; set; }
         public string Hash { get; set; }
         public DateTime CreationDateTime { get; set; }
+
         public override string ToString()
         {
             return Hash;
         }
 
-        
         public string CallingCode { get; set; }
 
         public string Postal { get; set; }
@@ -47,13 +48,13 @@ namespace FileShare.Repository.Model
 
         public string Ip { get; set; }
         public string Asn { get; set; }
-       
+
         public string AsnName { get; set; }
-       
+
         public string AsnDomain { get; set; }
-        
+
         public string AsnRoute { get; set; }
-      
+
         public string AsnType { get; set; }
         public string Languages { get; set; }
         public string TimeZone { get; set; }

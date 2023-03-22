@@ -1,17 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+﻿using FileShare.Filters;
+using FileShare.Grid;
 using FileShare.Models;
 using FileShare.Repository;
-using FileShare.Filters;
-using Microsoft.AspNetCore.Hosting;
-using System.IO;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using FileShare.Grid;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace FileShare.Controllers
 {
@@ -31,6 +31,7 @@ namespace FileShare.Controllers
             _userManager = userManager;
             _targetFilePath = Path.Combine(env.WebRootPath, "FILES");
         }
+
         public IActionResult Index()
         {
             return View();
@@ -48,7 +49,7 @@ namespace FileShare.Controllers
                 {
                     bool isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
                     IList<Repository.Model.FileModel> filesInDb;
-                    
+
                     if (isAdmin)
                     {
                         filesInDb = await _context.Files.ToListAsync();
@@ -82,12 +83,10 @@ namespace FileShare.Controllers
                         UploadDT = x.CreationDateTime
                     }).ToList();
 
-
                     return new GridPagedOutput<FileModel>(models) { Current = input.Current, RowCount = input.RowCount, Total = filesInDb.Count };
                 }
             }
             return new GridPagedOutput<FileModel>(null) { Current = input.Current, RowCount = input.RowCount, Total = 0 };
-
         }
     }
 }

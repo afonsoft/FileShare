@@ -14,10 +14,12 @@ namespace FileShare.Utilities
         {
             return mimeTypes.GetMimeTypeFromFile(filePath).Name;
         }
+
         public static string GetMimeFromByte(byte[] bytes)
         {
             return mimeTypes.GetMimeType(bytes).Name;
         }
+
         public static string GetMimeFromStream(Stream stream)
         {
             return mimeTypes.GetMimeType(ConverteStreamToByteArray(stream)).Name;
@@ -27,10 +29,12 @@ namespace FileShare.Utilities
         {
             return mimeTypes.GetMimeTypeFromFile(filePath).Extensions;
         }
+
         public static string[] GetExtensionsFromByte(byte[] bytes)
         {
             return mimeTypes.GetMimeType(bytes).Extensions;
         }
+
         public static string[] GetExtensionsFromStream(Stream stream)
         {
             return mimeTypes.GetMimeType(ConverteStreamToByteArray(stream)).Extensions;

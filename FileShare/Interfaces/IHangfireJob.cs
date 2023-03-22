@@ -4,7 +4,7 @@ using Hangfire.Server;
 
 namespace FileShare.Interfaces
 {
-    public interface IHangfireJob 
+    public interface IHangfireJob
     {
         void Initialize();
 
@@ -12,12 +12,12 @@ namespace FileShare.Interfaces
         [DisableConcurrentExecution(3600)]
         [AutomaticRetry(Attempts = 0)]
         void JobDeleteOldFiles(PerformContext context);
-             
+
         [DisableMultipleQueuedItemsFilter]
         [DisableConcurrentExecution(3600)]
         [AutomaticRetry(Attempts = 0)]
         void JobDeleteFilesNotExist(PerformContext context);
-        
+
         [DisableMultipleQueuedItemsFilter]
         [DisableConcurrentExecution(3600)]
         [AutomaticRetry(Attempts = 0)]

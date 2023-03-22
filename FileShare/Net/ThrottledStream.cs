@@ -15,6 +15,7 @@ namespace FileShare.Net
         public const long Infinite = 0;
 
         #region Private members
+
         /// <summary>
         /// The base stream.
         /// </summary>
@@ -34,9 +35,11 @@ namespace FileShare.Net
         /// The start time in milliseconds of the last throttle.
         /// </summary>
         private long _start;
-        #endregion
+
+        #endregion Private members
 
         #region Properties
+
         /// <summary>
         /// Gets the current milliseconds.
         /// </summary>
@@ -141,9 +144,11 @@ namespace FileShare.Net
                 _baseStream.Position = value;
             }
         }
-        #endregion
+
+        #endregion Properties
 
         #region Ctor
+
         /// <summary>
         /// Initializes a new instance of the <see cref="T:ThrottledStream"/> class with an
         /// infinite amount of bytes that can be processed.
@@ -160,8 +165,8 @@ namespace FileShare.Net
         /// </summary>
         /// <param name="baseStream">The base stream.</param>
         /// <param name="maximumBytesPerSecond">The maximum bytes per second that can be transferred through the base stream.</param>
-        /// <exception cref="ArgumentNullException">Thrown when <see cref="baseStream"/> is a null reference.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when <see cref="maximumBytesPerSecond"/> is a negative value.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when baseStream is a null reference.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when maximumBytesPerSecond is a negative value.</exception>
         public ThrottledStream(Stream baseStream, long maximumBytesPerSecond)
         {
             if (baseStream == null)
@@ -180,9 +185,11 @@ namespace FileShare.Net
             _start = CurrentMilliseconds;
             _byteCount = 0;
         }
-        #endregion
+
+        #endregion Ctor
 
         #region Public methods
+
         /// <summary>
         /// Clears all buffers for this stream and causes any buffered data to be written to the underlying device.
         /// </summary>
@@ -271,9 +278,11 @@ namespace FileShare.Net
         {
             return _baseStream.ToString();
         }
-        #endregion
+
+        #endregion Public methods
 
         #region Protected methods
+
         /// <summary>
         /// Throttles for the specified buffer size in bytes.
         /// </summary>
@@ -334,6 +343,7 @@ namespace FileShare.Net
                 _start = CurrentMilliseconds;
             }
         }
-        #endregion
+
+        #endregion Protected methods
     }
 }

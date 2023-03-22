@@ -1,6 +1,5 @@
-﻿using System.Collections.Concurrent;
-using System.Reflection;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
+using System.Collections.Concurrent;
 
 namespace FileShare.Configuration
 {

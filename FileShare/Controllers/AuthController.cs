@@ -1,9 +1,4 @@
-﻿using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
-using FileShare.Models;
+﻿using FileShare.Models;
 using FileShare.Repository;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -12,6 +7,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace FileShare.Controllers
 {
@@ -125,11 +125,11 @@ namespace FileShare.Controllers
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
-        
+
         [AllowAnonymous]
         public ActionResult Create(string returnUrl = "")
         {
-            return View(new CreateModel {  ReturnUrl = returnUrl });
+            return View(new CreateModel { ReturnUrl = returnUrl });
         }
 
         [AllowAnonymous]
@@ -187,7 +187,6 @@ namespace FileShare.Controllers
             }
             return View(create);
         }
-
 
         public ActionResult Forgot()
         {

@@ -1,17 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+﻿using FileShare.Memory;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Net.Http.Headers;
 using System;
 using System.IO;
 using System.Linq;
-using Microsoft.Net.Http.Headers;
 using System.Threading.Tasks;
-using FileShare.Memory;
 
 namespace FileShare.Utilities
 {
     public static class FileHelpers
     {
-
         public static async Task<HugeMemoryStream> ProcessStreamedFile(
             MultipartSection section, ContentDispositionHeaderValue contentDisposition,
             ModelStateDictionary modelState, string[] permittedExtensions, long sizeLimit)
@@ -45,7 +44,6 @@ namespace FileShare.Utilities
 
                     return memoryStream;
                 }
-
             }
             catch (Exception ex)
             {

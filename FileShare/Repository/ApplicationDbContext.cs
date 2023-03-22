@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 namespace FileShare.Repository
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationIdentityUser, ApplicationIdentityRole, Guid>
-    { 
+    {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
             try
@@ -46,7 +46,6 @@ namespace FileShare.Repository
             );
         }
 
-
         public DbSet<FileModel> Files { get; set; }
         public DbSet<ExtensionPermittedModel> PermittedExtension { get; set; }
         public DbSet<FileUserModel> FilesUsers { get; set; }
@@ -55,11 +54,9 @@ namespace FileShare.Repository
 
     public class ApplicationIdentityUser : IdentityUser<Guid>
     {
-
     }
 
     public class ApplicationIdentityRole : IdentityRole<Guid>
     {
-
     }
 }

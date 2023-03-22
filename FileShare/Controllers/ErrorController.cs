@@ -53,6 +53,7 @@ namespace FileShare.Controllers
                     case 404:
                         message = "Not Found";
                         break;
+
                     case 500:
                     case 501:
                     case 502:
@@ -60,6 +61,7 @@ namespace FileShare.Controllers
                     case 504:
                         message = "Internal Server Error / Service Unavailable / Bad Gateway";
                         break;
+
                     case 401:
                     case 403:
                     case 406:

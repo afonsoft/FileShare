@@ -4,12 +4,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FileShare.Repository.Model
 {
-
     public class LoggerDownloadModel
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         public Guid Id { get; set; }
+
         public string Name { get; set; }
         public string StorageName { get; set; }
         public string Type { get; set; }
@@ -54,6 +54,5 @@ namespace FileShare.Repository.Model
         public string Languages { get; set; }
         public string TimeZone { get; set; }
         public string Error { get; set; }
-
     }
 }

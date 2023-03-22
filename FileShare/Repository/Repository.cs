@@ -1,11 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FileShare.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using FileShare.Interfaces;
 
 namespace FileShare.Repository
 {
@@ -63,13 +63,12 @@ namespace FileShare.Repository
 
         private Repository()
         {
-
         }
 
         /// <summary>
         /// Add
         /// </summary>
-        public async virtual Task<int> AddAsync(TEntity entity)
+        public virtual async Task<int> AddAsync(TEntity entity)
         {
             await Table.AddAsync(entity);
             return await Context.SaveChangesAsync();
@@ -80,7 +79,7 @@ namespace FileShare.Repository
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public async virtual Task<int> AddRangeAsync(IEnumerable<TEntity> entity)
+        public virtual async Task<int> AddRangeAsync(IEnumerable<TEntity> entity)
         {
             await Table.AddRangeAsync(entity);
             return await Context.SaveChangesAsync();
@@ -98,8 +97,8 @@ namespace FileShare.Repository
         /// </summary>
         /// <param name="filter"></param>
         /// <returns></returns>
-        public async virtual Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> filter = null) => (filter != null ? await Table.FirstOrDefaultAsync(filter) : await Table.FirstOrDefaultAsync());
-     
+        public virtual async Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> filter = null) => (filter != null ? await Table.FirstOrDefaultAsync(filter) : await Table.FirstOrDefaultAsync());
+
         /// <summary>
         /// delete
         /// </summary>
@@ -121,7 +120,7 @@ namespace FileShare.Repository
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async virtual Task<int> DeleteByIdAsync(TKey id)
+        public virtual async Task<int> DeleteByIdAsync(TKey id)
         {
             var entity = await GetByIdAsync(id);
             if (entity == null)
@@ -135,7 +134,7 @@ namespace FileShare.Repository
         /// </summary>
         /// <param name="filter"></param>
         /// <returns></returns>
-        public async virtual Task<int> DeleteRangeAsync(Expression<Func<TEntity, bool>> filter)
+        public virtual async Task<int> DeleteRangeAsync(Expression<Func<TEntity, bool>> filter)
         {
             Table.RemoveRange(Table.Where(filter));
             return await Context.SaveChangesAsync();
@@ -146,7 +145,7 @@ namespace FileShare.Repository
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public async virtual Task<int> DeleteRangeAsync(IEnumerable<TEntity> entity)
+        public virtual async Task<int> DeleteRangeAsync(IEnumerable<TEntity> entity)
         {
             Table.RemoveRange(entity);
             return await Context.SaveChangesAsync();
@@ -157,7 +156,7 @@ namespace FileShare.Repository
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public async virtual Task<int> UpdateAsync(TEntity entity)
+        public virtual async Task<int> UpdateAsync(TEntity entity)
         {
             var entry = Context.Entry(entity);
             var pkey = entity.GetType().GetProperty(PrimaryKeyName)?.GetValue(entity);
@@ -165,7 +164,7 @@ namespace FileShare.Repository
             if (entry.State == EntityState.Detached)
             {
                 var set = Context.Set<TEntity>();
-                TEntity attachedEntity = await set.FindAsync(pkey); // access the key 
+                TEntity attachedEntity = await set.FindAsync(pkey); // access the key
                 if (attachedEntity != null)
                 {
                     var attachedEntry = Context.Entry(attachedEntity);
@@ -173,7 +172,7 @@ namespace FileShare.Repository
                 }
                 else
                 {
-                    entry.State = EntityState.Modified; // attach the entity 
+                    entry.State = EntityState.Modified; // attach the entity
                 }
             }
             else
@@ -189,7 +188,7 @@ namespace FileShare.Repository
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public async virtual Task<int> UpdateRangeAsync(IEnumerable<TEntity> entity)
+        public virtual async Task<int> UpdateRangeAsync(IEnumerable<TEntity> entity)
         {
             Parallel.ForEach(entity, async (ent) =>
             {
@@ -199,7 +198,7 @@ namespace FileShare.Repository
                 if (entry.State == EntityState.Detached)
                 {
                     var set = Context.Set<TEntity>();
-                    TEntity attachedEntity = await set.FindAsync(pkey); // access the key 
+                    TEntity attachedEntity = await set.FindAsync(pkey); // access the key
                     if (attachedEntity != null)
                     {
                         var attachedEntry = Context.Entry(attachedEntity);
@@ -207,7 +206,7 @@ namespace FileShare.Repository
                     }
                     else
                     {
-                        entry.State = EntityState.Modified; // attach the entity 
+                        entry.State = EntityState.Modified; // attach the entity
                     }
                 }
                 else
@@ -225,9 +224,8 @@ namespace FileShare.Repository
         /// <param name="entity"></param>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async virtual Task<int> UpdateByIdAsync(TEntity entity, TKey id)
+        public virtual async Task<int> UpdateByIdAsync(TEntity entity, TKey id)
         {
-
             TEntity attachedEntity = await GetByIdAsync(id) ?? entity;
 
             if (entity == null)

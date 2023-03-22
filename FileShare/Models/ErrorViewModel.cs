@@ -1,5 +1,3 @@
-using System;
-
 namespace FileShare.Models
 {
     public class ErrorViewModel

@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -24,7 +23,6 @@ namespace FileShare.Controllers
             _targetFilePath = Path.Combine(env.WebRootPath, "FILES");
         }
 
-
         [HttpGet("/download")]
         public IActionResult Index()
         {
@@ -39,7 +37,7 @@ namespace FileShare.Controllers
 
             var file = await _context.Files.FirstOrDefaultAsync(x => x.Hash == hashCode.ToUpper().Trim());
 
-            if(file == null)
+            if (file == null)
                 return RedirectToAction("index", "home");
 
             var model = new FileShare.Models.FileModel

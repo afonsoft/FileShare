@@ -57,7 +57,6 @@ namespace FileShare.Memory
             return _streamBuffers;
         }
 
-
         private int GetPageCount(long length)
         {
             int pageCount = (int)(length / PAGE_SIZE) + 1;
@@ -131,7 +130,7 @@ namespace FileShare.Memory
         public override bool CanWrite => true;
 
         /// <summary>
-        /// Length 
+        /// Length
         /// </summary>
         public override long Length => _length;
 
@@ -155,7 +154,8 @@ namespace FileShare.Memory
         /// <summary>
         /// Flush - NotSupportedException
         /// </summary>
-        public override void Flush() {  }
+        public override void Flush()
+        { }
 
         public override int Read(byte[] buffer, int offset, int count)
         {
@@ -258,9 +258,10 @@ namespace FileShare.Memory
             }
         }
 
-        #endregion
+        #endregion Stream
 
         #region IDispose
+
         protected override void Dispose(bool disposing)
         {
             _streamBuffers = null;
@@ -270,6 +271,7 @@ namespace FileShare.Memory
             _length = 0;
             base.Dispose(disposing);
         }
-        #endregion
+
+        #endregion IDispose
     }
 }

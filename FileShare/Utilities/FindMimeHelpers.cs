@@ -12,17 +12,38 @@ namespace FileShare.Utilities
 
         public static string GetMimeFromFile(string filePath)
         {
-            return mimeTypes.GetMimeTypeFromFile(filePath).Name;
+            try
+            {
+                return mimeTypes.GetMimeTypeFromFile(filePath)?.Name ?? "";
+            }
+            catch
+            {
+                return "application/octet-stream";
+            }
         }
 
         public static string GetMimeFromByte(byte[] bytes)
         {
-            return mimeTypes.GetMimeType(bytes).Name;
+            try
+            {
+                return mimeTypes.GetMimeType(bytes).Name;
+            }
+            catch
+            {
+                return "application/octet-stream";
+            }
         }
 
         public static string GetMimeFromStream(Stream stream)
         {
-            return mimeTypes.GetMimeType(ConverteStreamToByteArray(stream)).Name;
+            try
+            {
+                return mimeTypes.GetMimeType(ConverteStreamToByteArray(stream))?.Name ?? "";
+            }
+            catch
+            {
+                return "application/octet-stream";
+            }
         }
 
         public static string[] GetExtensionsFromFile(string filePath)

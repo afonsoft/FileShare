@@ -199,7 +199,7 @@ namespace FileShare
             {
                 options.Providers.Add<GzipCompressionProvider>();
                 options.Providers.Add<BrotliCompressionProvider>();
-                options.EnableForHttps = true;
+                options.EnableForHttps = false;
             });
 
             services.Configure<BrotliCompressionProviderOptions>(options => { options.Level = CompressionLevel.Fastest; });

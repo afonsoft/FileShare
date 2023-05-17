@@ -219,7 +219,6 @@ namespace FileShare
             app.UseDeveloperExceptionPage();
             app.UseStatusCodePagesWithReExecute("/Error/{0}");
             app.UseHsts();
-            app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
             app.UseSession();
